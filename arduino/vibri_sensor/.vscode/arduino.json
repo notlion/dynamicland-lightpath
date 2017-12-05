@@ -1,0 +1,6 @@
+{
+    "board": "arduino:avr:mega",
+    "configuration": "cpu=atmega2560",
+    "port": "/dev/cu.usbmodem1421",
+    "sketch": "vibri_sensor.ino"
+}

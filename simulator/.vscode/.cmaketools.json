@@ -1,0 +1,69 @@
+{
+  "variant": {
+    "label": "Debug",
+    "keywordSettings": {
+      "buildType": "debug"
+    },
+    "description": "Emit debug information without performing optimizations"
+  },
+  "activeEnvironments": [],
+  "codeModel": {
+    "configurations": [
+      {
+        "name": "Debug",
+        "projects": [
+          {
+            "buildDirectory": "/Users/ryan/code/dynamicland/lightpath/simulator/build",
+            "name": "opc_sim",
+            "sourceDirectory": "/Users/ryan/code/dynamicland/lightpath/simulator",
+            "targets": [
+              {
+                "artifacts": [
+                  "/Users/ryan/code/dynamicland/lightpath/simulator/build/Debug/LightpathSim/LightpathSim.app/Contents/MacOS/LightpathSim"
+                ],
+                "buildDirectory": "/Users/ryan/code/dynamicland/lightpath/simulator/build",
+                "fileGroups": [
+                  {
+                    "isGenerated": false,
+                    "sources": [
+                      "../../../frameworks/cinder-master/samples/data/CinderApp.icns",
+                      "res/led_splat_0.png"
+                    ]
+                  },
+                  {
+                    "compileFlags": "-g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk   -std=c++14",
+                    "defines": [
+                      "FT2_BUILD_LIBRARY",
+                      "FT_DEBUG_LEVEL_TRACE"
+                    ],
+                    "includePath": [
+                      {
+                        "isSystem": true,
+                        "path": "/Users/ryan/code/frameworks/cinder-master/include"
+                      }
+                    ],
+                    "isGenerated": false,
+                    "language": "CXX",
+                    "sources": [
+                      "src/LightpathSimApp.cpp"
+                    ]
+                  }
+                ],
+                "fullName": "LightpathSim",
+                "linkLanguageFlags": "-g",
+                "linkLibraries": "/Users/ryan/code/frameworks/cinder-master/lib/macosx/Debug/libcinder.a /Users/ryan/code/frameworks/cinder-master/lib/macosx/libboost_system.a /Users/ryan/code/frameworks/cinder-master/lib/macosx/libboost_filesystem.a -framework Cocoa -framework OpenGL -framework AudioToolbox -framework AVFoundation -framework AudioUnit -framework CoreAudio -framework CoreMedia -framework CoreVideo -framework Accelerate -framework IOSurface -framework IOKit",
+                "linkerLanguage": "CXX",
+                "name": "LightpathSim",
+                "sourceDirectory": "/Users/ryan/code/dynamicland/lightpath/simulator",
+                "type": "EXECUTABLE"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "cookie": "0.0023487518883811287",
+    "inReplyTo": "codemodel",
+    "type": "reply"
+  }
+}
