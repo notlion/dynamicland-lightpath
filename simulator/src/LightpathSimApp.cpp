@@ -87,6 +87,8 @@ public:
   CameraPersp m_camera;
 
   std::unique_ptr<Fx> m_ripple_fx;
+
+  int m_frame_id = 0;
 };
 
 void LightpathSimApp::setup() {
@@ -144,6 +146,7 @@ void LightpathSimApp::setup() {
 
   const auto center = m_led_bounds.getCenter();
   for (auto &p : positions) p -= center;
+  for (auto &p : m_led_positions) p -= center;
 
   m_led_bounds -= center;
 
@@ -151,7 +154,8 @@ void LightpathSimApp::setup() {
   m_led_mesh->bufferAttrib(geom::Attrib::TEX_COORD_0, texcoords);
   m_led_mesh->bufferAttrib(geom::Attrib::TEX_COORD_1, mask_texcoords);
 
-  m_ripple_fx = std::make_unique<FxPlasma>();
+  // m_ripple_fx = std::make_unique<FxTest>();
+  m_ripple_fx = std::make_unique<FxRipple>();
   m_ripple_fx->init(led_texture_size);
 }
 
@@ -159,10 +163,11 @@ void LightpathSimApp::resize() {}
 
 void LightpathSimApp::update() {
   const auto time = getElapsedSeconds();
-  const auto frame_id = getElapsedFrames();
 
-  m_ripple_fx->update(time, frame_id);
-  m_ripple_fx->render(time, frame_id, m_led_positions, m_led_bounds);
+  m_ripple_fx->update(time, m_frame_id);
+  m_ripple_fx->render(time, m_frame_id, m_led_positions, m_led_bounds);
+
+  m_frame_id++;
 }
 
 void LightpathSimApp::draw() {
@@ -192,6 +197,7 @@ void LightpathSimApp::draw() {
 void LightpathSimApp::prepareSettings(Settings *settings) {
   settings->setHighDensityDisplayEnabled(true);
   settings->setWindowSize(1280, 720);
+  // settings->setFrameRate(5);
 }
 
 
