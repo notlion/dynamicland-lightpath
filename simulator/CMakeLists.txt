@@ -11,6 +11,7 @@ include("${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake")
 ci_make_app(
 	APP_NAME    "LightpathSim"
 	SOURCES     ${APP_PATH}/src/LightpathSimApp.cpp
+							${APP_PATH}/src/Fx.cpp
 	RESOURCES   ${APP_PATH}/res/led_splat_0.png
 	CINDER_PATH ${CINDER_PATH}
 	)

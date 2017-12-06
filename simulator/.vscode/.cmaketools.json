@@ -13,48 +13,46 @@
         "name": "Debug",
         "projects": [
           {
-            "buildDirectory": "/Users/ryan/code/dynamicland/lightpath/simulator/build",
+            "buildDirectory": "/home/ryan/code/dynamicland/lightpath/simulator/build",
             "name": "LightpathSim",
-            "sourceDirectory": "/Users/ryan/code/dynamicland/lightpath/simulator",
+            "sourceDirectory": "/home/ryan/code/dynamicland/lightpath/simulator",
             "targets": [
               {
                 "artifacts": [
-                  "/Users/ryan/code/dynamicland/lightpath/simulator/build/Debug/LightpathSim/LightpathSim.app/Contents/MacOS/LightpathSim"
+                  "/home/ryan/code/dynamicland/lightpath/simulator/build/Debug/LightpathSim/LightpathSim"
                 ],
-                "buildDirectory": "/Users/ryan/code/dynamicland/lightpath/simulator/build",
+                "buildDirectory": "/home/ryan/code/dynamicland/lightpath/simulator/build",
                 "fileGroups": [
                   {
-                    "isGenerated": false,
-                    "sources": [
-                      "../../../frameworks/cinder-master/samples/data/CinderApp.icns",
-                      "res/led_splat_0.png"
-                    ]
-                  },
-                  {
-                    "compileFlags": "-g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk   -std=c++14",
+                    "compileFlags": "-g   -std=c++14",
                     "defines": [
                       "FT2_BUILD_LIBRARY",
-                      "FT_DEBUG_LEVEL_TRACE"
+                      "FT_DEBUG_LEVEL_TRACE",
+                      "_GLFW_X11 -D_GLFW_GLX -D_GLFW_USE_OPENGL",
+                      "_GLIBCXX_USE_CXX11_ABI=0",
+                      "_UNIX"
                     ],
                     "includePath": [
                       {
                         "isSystem": true,
-                        "path": "/Users/ryan/code/frameworks/cinder-master/include"
+                        "path": "/home/ryan/code/frameworks/cinder-master/include"
                       }
                     ],
                     "isGenerated": false,
                     "language": "CXX",
                     "sources": [
-                      "src/LightpathSimApp.cpp"
+                      "src/LightpathSimApp.cpp",
+                      "src/Fx.cpp"
                     ]
                   }
                 ],
                 "fullName": "LightpathSim",
+                "linkFlags": "-rdynamic",
                 "linkLanguageFlags": "-g",
-                "linkLibraries": "/Users/ryan/code/frameworks/cinder-master/lib/macosx/Debug/libcinder.a /Users/ryan/code/frameworks/cinder-master/lib/macosx/libboost_system.a /Users/ryan/code/frameworks/cinder-master/lib/macosx/libboost_filesystem.a -framework Cocoa -framework OpenGL -framework AudioToolbox -framework AVFoundation -framework AudioUnit -framework CoreAudio -framework CoreMedia -framework CoreVideo -framework Accelerate -framework IOSurface -framework IOKit",
+                "linkLibraries": "/home/ryan/code/frameworks/cinder-master/lib/linux/x86_64/ogl/Debug/libcinder.a -lGLU -lGL -lSM -lICE -lX11 -lXext -lXcursor -lXinerama -lXrandr -lXi -lz -lcurl -lfontconfig -lpulse -lmpg123 -lsndfile -lgobject-2.0 -lglib-2.0 -lgstreamer-1.0 -lgstbase-1.0 -lgstapp-1.0 -lgstvideo-1.0 -lgstgl-1.0 /home/ryan/code/frameworks/cinder-master/lib/linux/x86_64//libboost_system.a /home/ryan/code/frameworks/cinder-master/lib/linux/x86_64//libboost_filesystem.a -ldl -lpthread",
                 "linkerLanguage": "CXX",
                 "name": "LightpathSim",
-                "sourceDirectory": "/Users/ryan/code/dynamicland/lightpath/simulator",
+                "sourceDirectory": "/home/ryan/code/dynamicland/lightpath/simulator",
                 "type": "EXECUTABLE"
               }
             ]
@@ -62,7 +60,7 @@
         ]
       }
     ],
-    "cookie": "0.9685470152371967",
+    "cookie": "0.2678012209385643",
     "inReplyTo": "codemodel",
     "type": "reply"
   }

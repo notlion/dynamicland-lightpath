@@ -36,6 +36,10 @@
             "includePath": [
                 "/usr/include",
                 "/usr/local/include",
+                "/usr/include/c++/v1",
+                "/usr/include/linux",
+                "/usr/include/x86_64-linux-gnu",
+                "/home/ryan/code/frameworks/cinder-master/include",
                 "${workspaceRoot}"
             ],
             "defines": [],
@@ -44,6 +48,8 @@
                 "path": [
                     "/usr/include",
                     "/usr/local/include",
+                    "/home/ryan/code/frameworks/cinder-master/include",
+                    "/home/ryan/code/frameworks/cinder-master/src",
                     "${workspaceRoot}"
                 ],
                 "limitSymbolsToIncludedHeaders": true,

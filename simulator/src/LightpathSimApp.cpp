@@ -7,6 +7,8 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
+#include "Fx.hpp"
+
 using namespace ci;
 using namespace ci::app;
 
@@ -63,6 +65,7 @@ void main() {
 }
 )";
 
+
 class LightpathSimApp : public App {
 public:
   static void prepareSettings(Settings *settings);
@@ -72,35 +75,21 @@ public:
   void update() override;
   void draw() override;
 
-  vec3 getColor(const ivec2 &coord);
-  vec3 getPrevColor(const ivec2 &coord);
-  void processPixel(vec3 &color, const vec2 &pos, const ivec2 &coord, float time, uint32_t frame_id);
-
   gl::VboMeshRef m_led_mesh;
   gl::BatchRef m_led_batch;
 
   gl::TextureRef m_splat_texture;
-  gl::TextureRef m_led_texture;
 
   Rectf m_led_bounds;
 
   std::vector<vec2> m_led_positions;
-  std::vector<vec3> m_led_colors;
-  std::vector<vec3> m_led_colors_prev;
-
-  Surface32fRef m_led_color_surf;
 
   CameraPersp m_camera;
+
+  std::unique_ptr<Fx> m_ripple_fx;
 };
 
 void LightpathSimApp::setup() {
-  m_led_texture = gl::Texture::create(led_texture_size.x,
-                                      led_texture_size.y,
-                                      gl::Texture::Format()
-                                          .target(GL_TEXTURE_RECTANGLE)
-                                          .minFilter(GL_NEAREST)
-                                          .magFilter(GL_NEAREST)
-                                          .internalFormat(GL_RGB32F));
   m_splat_texture = gl::Texture::create(loadImage(loadResource("led_splat_0.png")),
                                         gl::Texture::Format().mipmap());
 
@@ -118,8 +107,6 @@ void LightpathSimApp::setup() {
   m_led_batch = gl::Batch::create(m_led_mesh, led_prog);
 
   m_led_positions.resize(led_pixel_count);
-  m_led_colors.resize(led_pixel_count);
-  m_led_colors_prev.resize(led_pixel_count);
 
   std::vector<vec2> positions;
   std::vector<vec2> texcoords;
@@ -163,6 +150,9 @@ void LightpathSimApp::setup() {
   m_led_mesh->bufferAttrib(geom::Attrib::POSITION, positions);
   m_led_mesh->bufferAttrib(geom::Attrib::TEX_COORD_0, texcoords);
   m_led_mesh->bufferAttrib(geom::Attrib::TEX_COORD_1, mask_texcoords);
+
+  m_ripple_fx = std::make_unique<FxPlasma>();
+  m_ripple_fx->init(led_texture_size);
 }
 
 void LightpathSimApp::resize() {}
@@ -171,96 +161,8 @@ void LightpathSimApp::update() {
   const auto time = getElapsedSeconds();
   const auto frame_id = getElapsedFrames();
 
-  std::swap(m_led_colors, m_led_colors_prev);
-
-  for (int i = 0; i < led_pixel_count; ++i) {
-    processPixel(m_led_colors[i], m_led_positions[i], ivec2(i % led_texture_size.x, i / led_texture_size.x), time, frame_id);
-  }
-
-  m_led_color_surf = Surface32f::create(&m_led_colors.front().x,
-                                        led_texture_size.x,
-                                        led_texture_size.y,
-                                        led_texture_size.x * sizeof(float) * 3,
-                                        SurfaceChannelOrder::RGB);
-
-  m_led_texture->update(*m_led_color_surf);
-}
-
-vec3 LightpathSimApp::getColor(const ivec2 &coord) {
-  int x = glm::clamp(coord.x, 0, led_texture_size.x - 1);
-  int y = glm::clamp(coord.y, 0, led_texture_size.y - 1);
-  return m_led_colors[y * led_texture_size.x + x];
-}
-
-vec3 LightpathSimApp::getPrevColor(const ivec2 &coord) {
-  int x = glm::clamp(coord.x, 0, led_texture_size.x - 1);
-  int y = glm::clamp(coord.y, 0, led_texture_size.y - 1);
-  return m_led_colors_prev[y * led_texture_size.x + x];
-}
-
-const ivec2 neighbor_directions[8]{
-  ivec2{  0, -1 },
-  ivec2{  1, -1 },
-  ivec2{  1,  0 },
-  ivec2{  1,  1 },
-  ivec2{  0,  1 },
-  ivec2{ -1,  1 },
-  ivec2{ -1,  0 },
-  ivec2{ -1, -1 }
-};
-
-const float neighbor_strengths[8]{
-  1.0f,
-  1.0f / glm::sqrt(2.0f),
-  1.0f,
-  1.0f / glm::sqrt(2.0f),
-  1.0f,
-  1.0f / glm::sqrt(2.0f),
-  1.0f,
-  1.0f / glm::sqrt(2.0f)
-};
-
-void LightpathSimApp::processPixel(vec3 &color, const vec2 &pos, const ivec2 &coord, float time, uint32_t frame_id) {
-  using namespace glm;
-
-#if 1
-  color = (vec3(sin((sin(pos.x) + cos(pos.y)) * 0.235f + time),
-                cos((cos(-pos.x * 0.337f) + sin(pos.y * 0.263f)) * 0.821f + time * 0.721f),
-                sin((sin(pos.x * 0.0831f) + cos(pos.t * 0.0731f)) * 1.2387f + time * 0.237f)) + 1.0f) * 0.5f;
-#else
-  if (frame_id < 2) {
-    color = vec3(0.0);
-  }
-  else {
-    const float friction = 0.25f;
-    const float gravity = 0.075f;
-    const float transmission = 0.025f;
-    const float tightness = 0.075f;
-    
-    const auto &color_prev = getPrevColor(coord);
-    
-    vec3 vel = color - color_prev;
-    vel *= 1.0f - friction;
-    vel += 0.0f - color * gravity;
-
-    // for (int i = 0; i < 8; ++i) {
-    //   const auto crd = coord + neighbor_directions[i];
-    //   const auto &c = getColor(crd);
-    //   const auto &cp = getPrevColor(crd);
-    //   vel += (c - color) * neighbor_strengths[i] * tightness;
-    //   vel += (c - cp) * neighbor_strengths[i] * transmission;
-    // }
-
-    color *= 0.9f;
-    // color += vel;
-
-    if (frame_id % 2 == 0) {
-      const auto p = vec2(randFloat(m_led_bounds.getX1(), m_led_bounds.getX2()),
-                          randFloat(m_led_bounds.getY1(), m_led_bounds.getY2()));
-      color += max(0.0, 1.0 - (distance(pos, p) * 0.05f));
-    }
-  }
-#endif
+  m_ripple_fx->update(time, frame_id);
+  m_ripple_fx->render(time, frame_id, m_led_positions, m_led_bounds);
 }
 
 void LightpathSimApp::draw() {
@@ -279,7 +181,7 @@ void LightpathSimApp::draw() {
   gl::disableDepthWrite();
 
   gl::ScopedBlendAdditive scopedBlend;
-  gl::ScopedTextureBind scopedLedTex(m_led_texture, 0);
+  gl::ScopedTextureBind scopedLedTex(m_ripple_fx->getTexture(), 0);
   gl::ScopedTextureBind scopedSplatTex(m_splat_texture, 1);
 
   m_led_batch->getGlslProg()->uniform("u_splat_scale", 2.0f);
@@ -289,6 +191,8 @@ void LightpathSimApp::draw() {
 
 void LightpathSimApp::prepareSettings(Settings *settings) {
   settings->setHighDensityDisplayEnabled(true);
+  settings->setWindowSize(1280, 720);
 }
+
 
 CINDER_APP(LightpathSimApp, RendererGl(RendererGl::Options().msaa(8)), LightpathSimApp::prepareSettings)
