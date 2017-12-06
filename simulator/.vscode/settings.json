@@ -34,6 +34,8 @@
     "string_view": "cpp",
     "unordered_map": "cpp",
     "utility": "cpp",
-    "valarray": "cpp"
+    "valarray": "cpp",
+    "random": "cpp",
+    "*.ipp": "cpp"
   }
 }
