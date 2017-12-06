@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-project(opc_sim)
+project(LightpathSim)
 
 get_filename_component(CINDER_PATH "~/code/frameworks/cinder-master" ABSOLUTE)
 get_filename_component(APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}" ABSOLUTE)

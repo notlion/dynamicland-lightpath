@@ -14,7 +14,7 @@
         "projects": [
           {
             "buildDirectory": "/Users/ryan/code/dynamicland/lightpath/simulator/build",
-            "name": "opc_sim",
+            "name": "LightpathSim",
             "sourceDirectory": "/Users/ryan/code/dynamicland/lightpath/simulator",
             "targets": [
               {
@@ -62,7 +62,7 @@
         ]
       }
     ],
-    "cookie": "0.0023487518883811287",
+    "cookie": "0.838485644689595",
     "inReplyTo": "codemodel",
     "type": "reply"
   }

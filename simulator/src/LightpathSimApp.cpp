@@ -2,6 +2,7 @@
 #include "cinder/ImageIo.h"
 #include "cinder/Log.h"
 #include "cinder/Surface.h"
+#include "cinder/Rand.h"
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
@@ -25,6 +26,7 @@ const std::string led_shader_vs_src = R"(
 
 uniform mat4 ciModelViewProjection;
 uniform float u_splat_scale;
+uniform vec2 u_led_texture_size;
 
 in vec2 ciPosition;
 in vec2 ciTexCoord0;
@@ -34,7 +36,7 @@ out vec2 v_texcoord_0;
 out vec2 v_texcoord_1;
 
 void main() {
-  v_texcoord_0 = ciTexCoord0;
+  v_texcoord_0 = ciTexCoord0 * u_led_texture_size + 0.5;
   v_texcoord_1 = ciTexCoord1;
 
   vec2 pos = ciPosition + u_splat_scale * (ciTexCoord1 * 2.0 - 1.0);
@@ -46,7 +48,7 @@ void main() {
 const std::string led_shader_fs_src = R"(
 #version 150 core
 
-uniform sampler2D u_led_tex;
+uniform sampler2DRect u_led_tex;
 uniform sampler2D u_splat_tex;
 uniform float u_splat_opacity;
 
@@ -70,6 +72,7 @@ public:
   void update() override;
   void draw() override;
 
+  vec3 getPixelColor(const ivec2 &coord);
   void processPixel(vec3 &color, const vec2 &pos, const ivec2 &coord);
 
   gl::VboMeshRef m_led_mesh;
@@ -90,10 +93,13 @@ public:
 };
 
 void LightpathSimApp::setup() {
-  m_led_texture = gl::Texture::create(
-      led_texture_size.x,
-      led_texture_size.y,
-      gl::Texture::Format().minFilter(GL_NEAREST).magFilter(GL_NEAREST).internalFormat(GL_RGB32F));
+  m_led_texture = gl::Texture::create(led_texture_size.x,
+                                      led_texture_size.y,
+                                      gl::Texture::Format()
+                                          .target(GL_TEXTURE_RECTANGLE)
+                                          .minFilter(GL_NEAREST)
+                                          .magFilter(GL_NEAREST)
+                                          .internalFormat(GL_RGB32F));
   m_splat_texture = gl::Texture::create(loadImage(loadResource("led_splat_0.png")),
                                         gl::Texture::Format().mipmap());
 
@@ -107,10 +113,12 @@ void LightpathSimApp::setup() {
   auto led_prog = gl::GlslProg::create(led_shader_vs_src, led_shader_fs_src);
   led_prog->uniform("u_led_tex", 0);
   led_prog->uniform("u_splat_tex", 1);
+  led_prog->uniform("u_led_texture_size", vec2(led_texture_size));
   m_led_batch = gl::Batch::create(m_led_mesh, led_prog);
 
   m_led_positions.resize(led_pixel_count);
   m_led_colors.resize(led_pixel_count);
+  m_led_colors_prev.resize(led_pixel_count);
 
   std::vector<vec2> positions;
   std::vector<vec2> texcoords;
@@ -134,7 +142,7 @@ void LightpathSimApp::setup() {
           const auto texcoord = (vec2(px, py) * vec2(led_pixel_grid_size) + vec2(x, y)) / vec2(led_texture_size);
 
           for (int i = 0; i < 6; ++i) {
-            positions.push_back(position);
+            positions.push_back(position);// + Rand::randVec2() * 0.1f);
             texcoords.push_back(texcoord);
           }
 
@@ -154,21 +162,30 @@ void LightpathSimApp::setup() {
   m_led_mesh->bufferAttrib(geom::Attrib::POSITION, positions);
   m_led_mesh->bufferAttrib(geom::Attrib::TEX_COORD_0, texcoords);
   m_led_mesh->bufferAttrib(geom::Attrib::TEX_COORD_1, mask_texcoords);
+}
+
+void LightpathSimApp::resize() {}
+
+void LightpathSimApp::update() {
+  std::swap(m_led_colors, m_led_colors_prev);
+  
+  for (int i = 0; i < led_pixel_count; ++i) {
+    processPixel(m_led_colors[i], m_led_positions[i], ivec2(i % led_texture_size.x, i / led_texture_size.x));
+  }
 
   m_led_color_surf = Surface32f::create(&m_led_colors.front().x,
                                         led_texture_size.x,
                                         led_texture_size.y,
                                         led_texture_size.x * sizeof(float) * 3,
                                         SurfaceChannelOrder::RGB);
+
+  m_led_texture->update(*m_led_color_surf);
 }
 
-void LightpathSimApp::resize() {}
-
-void LightpathSimApp::update() {
-  for (int i = 0; i < led_pixel_count; ++i) {
-    processPixel(m_led_colors[i], m_led_positions[i], ivec2(i % led_texture_size.x, i / led_texture_size.x));
-  }
-  m_led_texture->update(*m_led_color_surf);
+vec3 LightpathSimApp::getPixelColor(const ivec2 &coord) {
+  int x = glm::clamp(coord.x, 0, led_texture_size.x - 1);
+  int y = glm::clamp(coord.y, 0, led_texture_size.y - 1);
+  return m_led_colors_prev[y * led_texture_size.x + x];
 }
 
 void LightpathSimApp::processPixel(vec3 &color, const vec2 &pos, const ivec2 &coord) {
