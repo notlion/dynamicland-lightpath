@@ -14,4 +14,4 @@ ci_make_app(
 							${APP_PATH}/src/Fx.cpp
 	RESOURCES   ${APP_PATH}/res/led_splat_0.png
 	CINDER_PATH ${CINDER_PATH}
-	)
+)

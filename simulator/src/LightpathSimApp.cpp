@@ -195,8 +195,10 @@ void LightpathSimApp::draw() {
 }
 
 void LightpathSimApp::prepareSettings(Settings *settings) {
-  settings->setHighDensityDisplayEnabled(true);
+  settings->setHighDensityDisplayEnabled();
+  settings->setPowerManagementEnabled();
   settings->setWindowSize(1280, 720);
+  // settings->setAlwaysOnTop();
   // settings->setFrameRate(5);
 }
 

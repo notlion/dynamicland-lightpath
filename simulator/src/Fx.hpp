@@ -37,6 +37,7 @@ public:
 class FxRipple : public Fx {
   glm::vec3 m_random_color;
   glm::vec2 m_random_pos;
+  float m_random_radius;
 
 public:
   void update(double time, int frame_id) override;
