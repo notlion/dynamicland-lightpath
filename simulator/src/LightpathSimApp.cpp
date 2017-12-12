@@ -7,12 +7,13 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
+#include "OpcClient.h"
 #include "Fx.hpp"
 
 using namespace ci;
 using namespace ci::app;
 
-const ivec2 led_pixel_grid_size{ 10, 14 };
+const ivec2 led_pixel_grid_size{ 10, 12 };
 const ivec2 led_panel_grid_size{ 4, 2 };
 const ivec2 led_texture_size{ led_pixel_grid_size * led_panel_grid_size };
 const int led_pixel_count = led_texture_size.x * led_texture_size.y;
@@ -88,6 +89,8 @@ public:
 
   std::unique_ptr<Fx> m_ripple_fx;
 
+  kp::opc::ClientRef m_opc_client;
+
   int m_frame_id = 0;
 };
 
@@ -157,6 +160,8 @@ void LightpathSimApp::setup() {
   // m_ripple_fx = std::make_unique<FxTest>();
   m_ripple_fx = std::make_unique<FxRipple>();
   m_ripple_fx->init(led_texture_size);
+
+  m_opc_client = kp::opc::Client::create("localhost", 7890);
 }
 
 void LightpathSimApp::resize() {}
@@ -166,6 +171,27 @@ void LightpathSimApp::update() {
 
   m_ripple_fx->update(time, m_frame_id);
   m_ripple_fx->render(time, m_frame_id, m_led_positions, m_led_bounds);
+
+  {
+    int i = 0;
+    for (int x = 0; x < 5; ++x) {
+      for (int y = 0; y < 12; ++y) {
+        const auto &c = m_ripple_fx->getColor(ivec2(x, x % 2 == 0 ? y : 11 - y));
+        m_opc_client->setLED(i++, Colorf(c.r, c.g, c.b));
+      }
+    }
+  }
+  {
+    int i = 64;
+    for (int x = 5; x < 10; ++x) {
+      for (int y = 0; y < 12; ++y) {
+        const auto &c = m_ripple_fx->getColor(ivec2(x, x % 2 == 0 ? y : 11 - y));
+        m_opc_client->setLED(i++, Colorf(c.r, c.g, c.b));
+      }
+    }
+  }
+
+  m_opc_client->update();
 
   m_frame_id++;
 }
@@ -196,7 +222,7 @@ void LightpathSimApp::draw() {
 
 void LightpathSimApp::prepareSettings(Settings *settings) {
   settings->setHighDensityDisplayEnabled();
-  settings->setPowerManagementEnabled();
+  settings->setPowerManagementEnabled(false);
   settings->setWindowSize(1280, 720);
   // settings->setAlwaysOnTop();
   // settings->setFrameRate(5);

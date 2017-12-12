@@ -19,6 +19,10 @@ public:
     return m_texture;
   }
 
+  const std::vector<glm::vec3> &getColors() const {
+    return m_colors;
+  }
+
   glm::vec3 getColor(const glm::ivec2 &coord);
   glm::vec3 getPrevColor(const glm::ivec2 &coord);
 
