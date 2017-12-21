@@ -75,6 +75,7 @@ public:
   void resize() override;
   void update() override;
   void draw() override;
+  void mouseDown(MouseEvent event) override;
 
   gl::VboMeshRef m_led_mesh;
   gl::BatchRef m_led_batch;
@@ -160,6 +161,8 @@ void LightpathSimApp::setup() {
   // m_fx = std::make_unique<FxTest>();
   m_fx = std::make_unique<FxRipple>();
   // m_fx = std::make_unique<FxSensorTest>();
+
+  m_fx->initPrivate(led_texture_size);
   m_fx->init(led_texture_size);
 
   m_opc_client = kp::opc::Client::create("localhost", 7890);
@@ -173,26 +176,29 @@ void LightpathSimApp::update() {
   m_fx->update(time, m_frame_id);
   m_fx->render(time, m_frame_id, m_led_positions, m_led_bounds);
 
+  // Write to Fadecandy
   {
-    int i = 0;
-    for (int x = 4; x >= 0; --x) {
-      for (int y = 0; y < 12; ++y) {
-        const auto &c = m_fx->getColor(ivec2(x, x % 2 == 0 ? y : 11 - y));
-        m_opc_client->setLED(i++, Colorf(c.r, c.g, c.b));
+    {
+      int i = 0;
+      for (int x = 4; x >= 0; --x) {
+        for (int y = 0; y < 12; ++y) {
+          const auto &c = m_fx->getColor(ivec2(x, x % 2 == 0 ? y : 11 - y));
+          m_opc_client->setLED(i++, Colorf(c.r, c.g, c.b));
+        }
       }
     }
-  }
-  {
-    int i = 64;
-    for (int x = 5; x < 10; ++x) {
-      for (int y = 0; y < 12; ++y) {
-        const auto &c = m_fx->getColor(ivec2(x, x % 2 == 1 ? y : 11 - y));
-        m_opc_client->setLED(i++, Colorf(c.r, c.g, c.b));
+    {
+      int i = 64;
+      for (int x = 5; x < 10; ++x) {
+        for (int y = 0; y < 12; ++y) {
+          const auto &c = m_fx->getColor(ivec2(x, x % 2 == 1 ? y : 11 - y));
+          m_opc_client->setLED(i++, Colorf(c.r, c.g, c.b));
+        }
       }
     }
-  }
 
-  m_opc_client->update();
+    m_opc_client->update();
+  }
 
   m_frame_id++;
 }
@@ -220,6 +226,17 @@ void LightpathSimApp::draw() {
   m_led_batch->getGlslProg()->uniform("u_splat_opacity", 0.333f);
   m_led_batch->draw();
 }
+
+void LightpathSimApp::mouseDown(MouseEvent event) {
+  const auto windowSize = getWindowSize();
+  const auto ray = m_camera.generateRay(vec2(event.getPos().x, windowSize.y - event.getPos().y), windowSize);
+  
+  float t;
+  if (ray.calcPlaneIntersection(vec3(0.0f), vec3(0.0f, 0.0f, 1.0f), &t)) {
+    m_fx->pluck(vec2(ray.calcPosition(t)));
+  }
+}
+
 
 void LightpathSimApp::prepareSettings(Settings *settings) {
   settings->setHighDensityDisplayEnabled();

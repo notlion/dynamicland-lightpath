@@ -18,7 +18,7 @@ vec3 Fx::getPrevColor(const ivec2 &coord) {
   return m_colors_prev[c.y * s.x + c.x];
 }
 
-void Fx::init(const ivec2 &size) {
+void Fx::initPrivate(const ivec2 &size) {
   m_colors.resize(size.x * size.y, vec3(0.0f));
   m_colors_prev.resize(size.x * size.y, vec3(0.0f));
   m_colors_next.resize(size.x * size.y, vec3(0.0f));
@@ -31,8 +31,6 @@ void Fx::init(const ivec2 &size) {
                                       .magFilter(GL_NEAREST)
                                       .internalFormat(GL_RGB32F));
 }
-
-void Fx::update(double time, int frame_id) {}
 
 void Fx::render(double time, int frame_id, const std::vector<vec2> &positions, const Rectf &bounds) {
   m_render_bounds = bounds;
@@ -52,6 +50,10 @@ void Fx::render(double time, int frame_id, const std::vector<vec2> &positions, c
   std::copy(m_colors.begin(), m_colors.end(), m_colors_prev.begin());
   std::copy(m_colors_next.begin(), m_colors_next.end(), m_colors.begin());
 }
+
+void Fx::init(const ivec2 &size) {}
+void Fx::update(double time, int frame_id) {}
+void Fx::pluck(const vec2 &pos) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -94,12 +96,16 @@ const float neighbor_strengths[8]{
 };
 
 void FxRipple::update(double time, int frame_id) {
-  if (frame_id % 5 == 0) {
-    m_random_pos = vec2(randFloat(m_render_bounds.getX1(), m_render_bounds.getX2()),
-                        randFloat(m_render_bounds.getY1(), m_render_bounds.getY2()));
-    m_random_color = vec3(randFloat(), randFloat(), randFloat());
-    m_random_radius = randFloat(5.0f, 10.0f);
+  if (auto_pluck && frame_id % 5 == 0) {
+    pluck(vec2(randFloat(m_render_bounds.getX1(), m_render_bounds.getX2()),
+               randFloat(m_render_bounds.getY1(), m_render_bounds.getY2())));
   }
+}
+
+void FxRipple::pluck(const vec2 &pos) {
+  m_random_pos = pos;
+  m_random_color = vec3(randFloat(), randFloat(), randFloat());
+  m_random_radius = randFloat(5.0f, 10.0f);  
 }
 
 void FxRipple::renderPixel(vec3 &color, const vec2 &pos, const ivec2 &coord, double time, int frame_id) {
@@ -130,8 +136,6 @@ void FxRipple::renderPixel(vec3 &color, const vec2 &pos, const ivec2 &coord, dou
 
 
 void FxSensorTest::init(const ivec2 &size) {
-  Fx::init(size);
-
   auto device = Serial::findDeviceByNameContains("cu.usbserial");
   if (!device.getName().empty()) {
     m_sensor = Serial::create(device, 9600);

@@ -27,11 +27,13 @@ public:
   glm::vec3 getColor(const glm::ivec2 &coord);
   glm::vec3 getPrevColor(const glm::ivec2 &coord);
 
+  void initPrivate(const glm::ivec2 &size);
   void render(double time, int frame_id, const std::vector<glm::vec2> &positions, const ci::Rectf &bounds);
 
   virtual void init(const glm::ivec2 &size);
   virtual void update(double time, int frame_id);
   virtual void renderPixel(glm::vec3 &color, const glm::vec2 &pos, const glm::ivec2 &coord, double time, int frame_id) = 0;
+  virtual void pluck(const glm::vec2 &pos);
 };
 
 
@@ -51,7 +53,10 @@ class FxRipple : public Fx {
   float m_random_radius;
 
 public:
+  bool auto_pluck = false;
+
   void update(double time, int frame_id) override;
+  void pluck(const glm::vec2 &pos) override;
   void renderPixel(glm::vec3 &color, const glm::vec2 &pos, const glm::ivec2 &coord, double time, int frame_id) override;
 };
 
