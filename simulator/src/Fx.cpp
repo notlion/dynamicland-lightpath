@@ -133,17 +133,21 @@ void FxSensorTest::init(const ivec2 &size) {
   Fx::init(size);
 
   auto device = Serial::findDeviceByNameContains("cu.usbserial");
-  m_sensor = Serial::create(device, 9600);
+  if (!device.getName().empty()) {
+    m_sensor = Serial::create(device, 9600);
+  }
 }
 
 void FxSensorTest::update(double time, int frame_id) {
-  std::array<uint8_t, 256> bytes;
-  const auto len = m_sensor->readAvailableBytes(bytes.data(), bytes.size());
+  if (m_sensor) {
+    std::array<uint8_t, 256> bytes;
+    const auto len = m_sensor->readAvailableBytes(bytes.data(), bytes.size());
 
-  for (std::size_t i = 0; i < len; ++i) {
-    m_sensor_min = min(int(bytes[i]), m_sensor_min);
-    m_sensor_max = max(int(bytes[i]), m_sensor_max);
-    m_sensor_value = int(bytes[i]);
+    for (std::size_t i = 0; i < len; ++i) {
+      m_sensor_min = min(int(bytes[i]), m_sensor_min);
+      m_sensor_max = max(int(bytes[i]), m_sensor_max);
+      m_sensor_value = int(bytes[i]);
+    }
   }
 }
 

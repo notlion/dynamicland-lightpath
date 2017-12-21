@@ -158,8 +158,8 @@ void LightpathSimApp::setup() {
   m_led_mesh->bufferAttrib(geom::Attrib::TEX_COORD_1, mask_texcoords);
 
   // m_fx = std::make_unique<FxTest>();
-  // m_fx = std::make_unique<FxRipple>();
-  m_fx = std::make_unique<FxSensorTest>();
+  m_fx = std::make_unique<FxRipple>();
+  // m_fx = std::make_unique<FxSensorTest>();
   m_fx->init(led_texture_size);
 
   m_opc_client = kp::opc::Client::create("localhost", 7890);
@@ -179,7 +179,6 @@ void LightpathSimApp::update() {
       for (int y = 0; y < 12; ++y) {
         const auto &c = m_fx->getColor(ivec2(x, x % 2 == 0 ? y : 11 - y));
         m_opc_client->setLED(i++, Colorf(c.r, c.g, c.b));
-        // m_opc_client->setLED(i++, Colorf(x / 9.0f, y / 11.0f, 0.0f));
       }
     }
   }
@@ -189,7 +188,6 @@ void LightpathSimApp::update() {
       for (int y = 0; y < 12; ++y) {
         const auto &c = m_fx->getColor(ivec2(x, x % 2 == 1 ? y : 11 - y));
         m_opc_client->setLED(i++, Colorf(c.r, c.g, c.b));
-        // m_opc_client->setLED(i++, Colorf(x / 9.0f, y / 11.0f, 0.0f));
       }
     }
   }
