@@ -1,5 +1,6 @@
-#include "cinder/Vector.h"
 #include "cinder/Rect.h"
+#include "cinder/Serial.h"
+#include "cinder/Vector.h"
 #include "cinder/gl/Texture.h"
 
 class Fx {
@@ -33,7 +34,13 @@ public:
   virtual void renderPixel(glm::vec3 &color, const glm::vec2 &pos, const glm::ivec2 &coord, double time, int frame_id) = 0;
 };
 
+
 class FxTest : public Fx {
+public:
+  void renderPixel(glm::vec3 &color, const glm::vec2 &pos, const glm::ivec2 &coord, double time, int frame_id) override;
+};
+
+class FxPlasma : public Fx {
 public:
   void renderPixel(glm::vec3 &color, const glm::vec2 &pos, const glm::ivec2 &coord, double time, int frame_id) override;
 };
@@ -48,7 +55,15 @@ public:
   void renderPixel(glm::vec3 &color, const glm::vec2 &pos, const glm::ivec2 &coord, double time, int frame_id) override;
 };
 
-class FxPlasma : public Fx {
+class FxSensorTest : public Fx {
+  ci::SerialRef m_sensor;
+
+  int m_sensor_min = std::numeric_limits<int>::max();
+  int m_sensor_max = 0;
+  int m_sensor_value;
+
 public:
+  void init(const glm::ivec2 &size) override;
+  void update(double time, int frame_id) override;
   void renderPixel(glm::vec3 &color, const glm::vec2 &pos, const glm::ivec2 &coord, double time, int frame_id) override;
 };

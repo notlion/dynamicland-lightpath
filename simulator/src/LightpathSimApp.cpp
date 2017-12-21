@@ -87,7 +87,7 @@ public:
 
   CameraPersp m_camera;
 
-  std::unique_ptr<Fx> m_ripple_fx;
+  std::unique_ptr<Fx> m_fx;
 
   kp::opc::ClientRef m_opc_client;
 
@@ -157,9 +157,10 @@ void LightpathSimApp::setup() {
   m_led_mesh->bufferAttrib(geom::Attrib::TEX_COORD_0, texcoords);
   m_led_mesh->bufferAttrib(geom::Attrib::TEX_COORD_1, mask_texcoords);
 
-  // m_ripple_fx = std::make_unique<FxTest>();
-  m_ripple_fx = std::make_unique<FxRipple>();
-  m_ripple_fx->init(led_texture_size);
+  // m_fx = std::make_unique<FxTest>();
+  // m_fx = std::make_unique<FxRipple>();
+  m_fx = std::make_unique<FxSensorTest>();
+  m_fx->init(led_texture_size);
 
   m_opc_client = kp::opc::Client::create("localhost", 7890);
 }
@@ -169,15 +170,16 @@ void LightpathSimApp::resize() {}
 void LightpathSimApp::update() {
   const auto time = getElapsedSeconds();
 
-  m_ripple_fx->update(time, m_frame_id);
-  m_ripple_fx->render(time, m_frame_id, m_led_positions, m_led_bounds);
+  m_fx->update(time, m_frame_id);
+  m_fx->render(time, m_frame_id, m_led_positions, m_led_bounds);
 
   {
     int i = 0;
-    for (int x = 0; x < 5; ++x) {
+    for (int x = 4; x >= 0; --x) {
       for (int y = 0; y < 12; ++y) {
-        const auto &c = m_ripple_fx->getColor(ivec2(x, x % 2 == 0 ? y : 11 - y));
+        const auto &c = m_fx->getColor(ivec2(x, x % 2 == 0 ? y : 11 - y));
         m_opc_client->setLED(i++, Colorf(c.r, c.g, c.b));
+        // m_opc_client->setLED(i++, Colorf(x / 9.0f, y / 11.0f, 0.0f));
       }
     }
   }
@@ -185,8 +187,9 @@ void LightpathSimApp::update() {
     int i = 64;
     for (int x = 5; x < 10; ++x) {
       for (int y = 0; y < 12; ++y) {
-        const auto &c = m_ripple_fx->getColor(ivec2(x, x % 2 == 0 ? y : 11 - y));
+        const auto &c = m_fx->getColor(ivec2(x, x % 2 == 1 ? y : 11 - y));
         m_opc_client->setLED(i++, Colorf(c.r, c.g, c.b));
+        // m_opc_client->setLED(i++, Colorf(x / 9.0f, y / 11.0f, 0.0f));
       }
     }
   }
@@ -212,7 +215,7 @@ void LightpathSimApp::draw() {
   gl::disableDepthWrite();
 
   gl::ScopedBlendAdditive scopedBlend;
-  gl::ScopedTextureBind scopedLedTex(m_ripple_fx->getTexture(), 0);
+  gl::ScopedTextureBind scopedLedTex(m_fx->getTexture(), 0);
   gl::ScopedTextureBind scopedSplatTex(m_splat_texture, 1);
 
   m_led_batch->getGlslProg()->uniform("u_splat_scale", 2.0f);

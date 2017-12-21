@@ -1,0 +1,417 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		006D720419952D00008149E2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D720219952D00008149E2 /* AVFoundation.framework */; };
+		006D720519952D00008149E2 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D720319952D00008149E2 /* CoreMedia.framework */; };
+		0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0091D8F80E81B9330029341E /* OpenGL.framework */; };
+		00B784B30FF439BC000DE1D7 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784AF0FF439BC000DE1D7 /* Accelerate.framework */; };
+		00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
+		00B784B50FF439BC000DE1D7 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B10FF439BC000DE1D7 /* AudioUnit.framework */; };
+		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
+		00B9955A1B128DF400A5C623 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995581B128DF400A5C623 /* IOKit.framework */; };
+		00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995591B128DF400A5C623 /* IOSurface.framework */; };
+		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
+		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		943115201FE4DF5800A50B17 /* SessionInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 943114FF1FE4DF5400A50B17 /* SessionInterface.cpp */; };
+		943115211FE4DF5800A50B17 /* UdpSession.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 943115021FE4DF5400A50B17 /* UdpSession.cpp */; };
+		943115221FE4DF5800A50B17 /* TcpClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 943115041FE4DF5400A50B17 /* TcpClient.cpp */; };
+		943115231FE4DF5800A50B17 /* ServerInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 943115071FE4DF5500A50B17 /* ServerInterface.cpp */; };
+		943115241FE4DF5800A50B17 /* WaitTimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 943115091FE4DF5500A50B17 /* WaitTimer.cpp */; };
+		943115251FE4DF5800A50B17 /* TcpServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9431150A1FE4DF5500A50B17 /* TcpServer.cpp */; };
+		943115261FE4DF5800A50B17 /* ClientInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9431150F1FE4DF5500A50B17 /* ClientInterface.cpp */; };
+		943115271FE4DF5800A50B17 /* UdpServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 943115111FE4DF5600A50B17 /* UdpServer.cpp */; };
+		943115281FE4DF5800A50B17 /* TcpSession.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 943115121FE4DF5600A50B17 /* TcpSession.cpp */; };
+		943115291FE4DF5800A50B17 /* DispatcherInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 943115171FE4DF5600A50B17 /* DispatcherInterface.cpp */; };
+		9431152A1FE4DF5800A50B17 /* UdpClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 943115191FE4DF5700A50B17 /* UdpClient.cpp */; };
+		9431152D1FE4DFA100A50B17 /* OpcClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9431152B1FE4DFA100A50B17 /* OpcClient.cpp */; };
+		9431152E1FE4DFA100A50B17 /* Fx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9431152C1FE4DFA100A50B17 /* Fx.cpp */; };
+		943115331FE4E04F00A50B17 /* led_splat_0.png in Resources */ = {isa = PBXBuildFile; fileRef = 943115321FE4E04F00A50B17 /* led_splat_0.png */; };
+		943115351FE4E05800A50B17 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 943115341FE4E05800A50B17 /* CinderApp.icns */; };
+		A6CEC95252374751B4B59A4A /* LightpathSimApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A949184CD7F9409E9AC9F63E /* LightpathSimApp.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		006D720219952D00008149E2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		006D720319952D00008149E2 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		0091D8F80E81B9330029341E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
+		00B784AF0FF439BC000DE1D7 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		00B784B10FF439BC000DE1D7 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
+		00B784B20FF439BC000DE1D7 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		00B995581B128DF400A5C623 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		00B995591B128DF400A5C623 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
+		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
+		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
+		84B7BC6DF23C400EAADC31CF /* LightpathSim_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = LightpathSim_Prefix.pch; sourceTree = "<group>"; };
+		8D1107320486CEB800E47090 /* LightpathSim.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LightpathSim.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		943114FF1FE4DF5400A50B17 /* SessionInterface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SessionInterface.cpp; path = "../../../../frameworks/cinder-master/blocks/Cinder-Asio/src/SessionInterface.cpp"; sourceTree = "<group>"; };
+		943115021FE4DF5400A50B17 /* UdpSession.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UdpSession.cpp; path = "../../../../frameworks/cinder-master/blocks/Cinder-Asio/src/UdpSession.cpp"; sourceTree = "<group>"; };
+		943115041FE4DF5400A50B17 /* TcpClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TcpClient.cpp; path = "../../../../frameworks/cinder-master/blocks/Cinder-Asio/src/TcpClient.cpp"; sourceTree = "<group>"; };
+		943115071FE4DF5500A50B17 /* ServerInterface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ServerInterface.cpp; path = "../../../../frameworks/cinder-master/blocks/Cinder-Asio/src/ServerInterface.cpp"; sourceTree = "<group>"; };
+		943115091FE4DF5500A50B17 /* WaitTimer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WaitTimer.cpp; path = "../../../../frameworks/cinder-master/blocks/Cinder-Asio/src/WaitTimer.cpp"; sourceTree = "<group>"; };
+		9431150A1FE4DF5500A50B17 /* TcpServer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TcpServer.cpp; path = "../../../../frameworks/cinder-master/blocks/Cinder-Asio/src/TcpServer.cpp"; sourceTree = "<group>"; };
+		9431150F1FE4DF5500A50B17 /* ClientInterface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ClientInterface.cpp; path = "../../../../frameworks/cinder-master/blocks/Cinder-Asio/src/ClientInterface.cpp"; sourceTree = "<group>"; };
+		943115111FE4DF5600A50B17 /* UdpServer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UdpServer.cpp; path = "../../../../frameworks/cinder-master/blocks/Cinder-Asio/src/UdpServer.cpp"; sourceTree = "<group>"; };
+		943115121FE4DF5600A50B17 /* TcpSession.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TcpSession.cpp; path = "../../../../frameworks/cinder-master/blocks/Cinder-Asio/src/TcpSession.cpp"; sourceTree = "<group>"; };
+		943115171FE4DF5600A50B17 /* DispatcherInterface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DispatcherInterface.cpp; path = "../../../../frameworks/cinder-master/blocks/Cinder-Asio/src/DispatcherInterface.cpp"; sourceTree = "<group>"; };
+		943115191FE4DF5700A50B17 /* UdpClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UdpClient.cpp; path = "../../../../frameworks/cinder-master/blocks/Cinder-Asio/src/UdpClient.cpp"; sourceTree = "<group>"; };
+		9431152B1FE4DFA100A50B17 /* OpcClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OpcClient.cpp; path = ../src/OpcClient.cpp; sourceTree = "<group>"; };
+		9431152C1FE4DFA100A50B17 /* Fx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Fx.cpp; path = ../src/Fx.cpp; sourceTree = "<group>"; };
+		9431152F1FE4DFB500A50B17 /* OpcClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OpcClient.h; path = ../include/OpcClient.h; sourceTree = "<group>"; };
+		943115301FE4DFB500A50B17 /* OpcConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OpcConstants.h; path = ../include/OpcConstants.h; sourceTree = "<group>"; };
+		943115311FE4DFB500A50B17 /* Fx.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = Fx.hpp; path = ../include/Fx.hpp; sourceTree = "<group>"; };
+		943115321FE4E04F00A50B17 /* led_splat_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = led_splat_0.png; path = ../res/led_splat_0.png; sourceTree = "<group>"; };
+		943115341FE4E05800A50B17 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../res/CinderApp.icns; sourceTree = "<group>"; };
+		A949184CD7F9409E9AC9F63E /* LightpathSimApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = LightpathSimApp.cpp; path = ../src/LightpathSimApp.cpp; sourceTree = "<group>"; };
+		E931196938B64335838E1FB0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8D11072E0486CEB800E47090 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				006D720419952D00008149E2 /* AVFoundation.framework in Frameworks */,
+				006D720519952D00008149E2 /* CoreMedia.framework in Frameworks */,
+				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
+				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
+				5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */,
+				00B784B30FF439BC000DE1D7 /* Accelerate.framework in Frameworks */,
+				00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */,
+				00B784B50FF439BC000DE1D7 /* AudioUnit.framework in Frameworks */,
+				00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */,
+				00B9955A1B128DF400A5C623 /* IOKit.framework in Frameworks */,
+				00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		013A34B3C89744EEA2C0339B /* Asio */ = {
+			isa = PBXGroup;
+			children = (
+				76ED5B5B2ADD449AAF1C3392 /* src */,
+			);
+			name = Asio;
+			sourceTree = "<group>";
+		};
+		01B97315FEAEA392516A2CEA /* Blocks */ = {
+			isa = PBXGroup;
+			children = (
+				013A34B3C89744EEA2C0339B /* Asio */,
+			);
+			name = Blocks;
+			sourceTree = "<group>";
+		};
+		080E96DDFE201D6D7F000001 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				9431152C1FE4DFA100A50B17 /* Fx.cpp */,
+				9431152B1FE4DFA100A50B17 /* OpcClient.cpp */,
+				A949184CD7F9409E9AC9F63E /* LightpathSimApp.cpp */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				006D720219952D00008149E2 /* AVFoundation.framework */,
+				006D720319952D00008149E2 /* CoreMedia.framework */,
+				00B784AF0FF439BC000DE1D7 /* Accelerate.framework */,
+				00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */,
+				00B784B10FF439BC000DE1D7 /* AudioUnit.framework */,
+				00B784B20FF439BC000DE1D7 /* CoreAudio.framework */,
+				5323E6B10EAFCA74003A9687 /* CoreVideo.framework */,
+				0091D8F80E81B9330029341E /* OpenGL.framework */,
+				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
+				00B995581B128DF400A5C623 /* IOKit.framework */,
+				00B995591B128DF400A5C623 /* IOSurface.framework */,
+			);
+			name = "Linked Frameworks";
+			sourceTree = "<group>";
+		};
+		1058C7A2FEA54F0111CA2CBB /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				29B97324FDCFA39411CA2CEA /* AppKit.framework */,
+				29B97325FDCFA39411CA2CEA /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		19C28FACFE9D520D11CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8D1107320486CEB800E47090 /* LightpathSim.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		29B97314FDCFA39411CA2CEA /* LightpathSim */ = {
+			isa = PBXGroup;
+			children = (
+				01B97315FEAEA392516A2CEA /* Blocks */,
+				29B97315FDCFA39411CA2CEA /* Headers */,
+				080E96DDFE201D6D7F000001 /* Source */,
+				29B97317FDCFA39411CA2CEA /* Resources */,
+				29B97323FDCFA39411CA2CEA /* Frameworks */,
+				19C28FACFE9D520D11CA2CBB /* Products */,
+			);
+			name = LightpathSim;
+			sourceTree = "<group>";
+		};
+		29B97315FDCFA39411CA2CEA /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				943115311FE4DFB500A50B17 /* Fx.hpp */,
+				9431152F1FE4DFB500A50B17 /* OpcClient.h */,
+				943115301FE4DFB500A50B17 /* OpcConstants.h */,
+				84B7BC6DF23C400EAADC31CF /* LightpathSim_Prefix.pch */,
+			);
+			name = Headers;
+			sourceTree = "<group>";
+		};
+		29B97317FDCFA39411CA2CEA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				943115341FE4E05800A50B17 /* CinderApp.icns */,
+				943115321FE4E04F00A50B17 /* led_splat_0.png */,
+				E931196938B64335838E1FB0 /* Info.plist */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
+				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		76ED5B5B2ADD449AAF1C3392 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				9431150F1FE4DF5500A50B17 /* ClientInterface.cpp */,
+				943115171FE4DF5600A50B17 /* DispatcherInterface.cpp */,
+				943115071FE4DF5500A50B17 /* ServerInterface.cpp */,
+				943114FF1FE4DF5400A50B17 /* SessionInterface.cpp */,
+				943115041FE4DF5400A50B17 /* TcpClient.cpp */,
+				9431150A1FE4DF5500A50B17 /* TcpServer.cpp */,
+				943115121FE4DF5600A50B17 /* TcpSession.cpp */,
+				943115191FE4DF5700A50B17 /* UdpClient.cpp */,
+				943115111FE4DF5600A50B17 /* UdpServer.cpp */,
+				943115021FE4DF5400A50B17 /* UdpSession.cpp */,
+				943115091FE4DF5500A50B17 /* WaitTimer.cpp */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8D1107260486CEB800E47090 /* LightpathSim */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "LightpathSim" */;
+			buildPhases = (
+				8D1107290486CEB800E47090 /* Resources */,
+				8D11072C0486CEB800E47090 /* Sources */,
+				8D11072E0486CEB800E47090 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LightpathSim;
+			productInstallPath = "$(HOME)/Applications";
+			productName = LightpathSim;
+			productReference = 8D1107320486CEB800E47090 /* LightpathSim.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		29B97313FDCFA39411CA2CEA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+			};
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "LightpathSim" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 29B97314FDCFA39411CA2CEA /* LightpathSim */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8D1107260486CEB800E47090 /* LightpathSim */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8D1107290486CEB800E47090 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				943115331FE4E04F00A50B17 /* led_splat_0.png in Resources */,
+				943115351FE4E05800A50B17 /* CinderApp.icns in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8D11072C0486CEB800E47090 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				943115221FE4DF5800A50B17 /* TcpClient.cpp in Sources */,
+				943115231FE4DF5800A50B17 /* ServerInterface.cpp in Sources */,
+				943115271FE4DF5800A50B17 /* UdpServer.cpp in Sources */,
+				943115241FE4DF5800A50B17 /* WaitTimer.cpp in Sources */,
+				943115281FE4DF5800A50B17 /* TcpSession.cpp in Sources */,
+				943115201FE4DF5800A50B17 /* SessionInterface.cpp in Sources */,
+				9431152A1FE4DF5800A50B17 /* UdpClient.cpp in Sources */,
+				943115261FE4DF5800A50B17 /* ClientInterface.cpp in Sources */,
+				943115251FE4DF5800A50B17 /* TcpServer.cpp in Sources */,
+				A6CEC95252374751B4B59A4A /* LightpathSimApp.cpp in Sources */,
+				943115291FE4DF5800A50B17 /* DispatcherInterface.cpp in Sources */,
+				943115211FE4DF5800A50B17 /* UdpSession.cpp in Sources */,
+				9431152D1FE4DFA100A50B17 /* OpcClient.cpp in Sources */,
+				9431152E1FE4DFA100A50B17 /* Fx.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		C01FCF4B08A954540054247B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = LightpathSim_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = LightpathSim;
+				SYMROOT = ./build;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		C01FCF4C08A954540054247B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_FAST_MATH = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = LightpathSim_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"NDEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = LightpathSim;
+				STRIP_INSTALLED_PRODUCT = YES;
+				SYMROOT = ./build;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		C01FCF4F08A954540054247B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CINDER_PATH = "../../../../frameworks/cinder-master";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				ENABLE_TESTABILITY = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\"";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include \"../../../../frameworks/cinder-master/blocks/Cinder-Asio/src\"";
+			};
+			name = Debug;
+		};
+		C01FCF5008A954540054247B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CINDER_PATH = "../../../../frameworks/cinder-master";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\"";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include \"../../../../frameworks/cinder-master/blocks/Cinder-Asio/src\"";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "LightpathSim" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4B08A954540054247B /* Debug */,
+				C01FCF4C08A954540054247B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "LightpathSim" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4F08A954540054247B /* Debug */,
+				C01FCF5008A954540054247B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+}

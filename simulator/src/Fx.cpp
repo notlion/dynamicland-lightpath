@@ -8,13 +8,13 @@ using namespace ci;
 
 vec3 Fx::getColor(const ivec2 &coord) {
   const auto &s = m_texture->getSize();
-  const auto c = glm::clamp(coord, ivec2(0), s - 1);
+  const auto c = clamp(coord, ivec2(0), s - 1);
   return m_colors[c.y * s.x + c.x];
 }
 
 vec3 Fx::getPrevColor(const ivec2 &coord) {
   const auto &s = m_texture->getSize();
-  const auto c = glm::clamp(coord, ivec2(0), s - 1);
+  const auto c = clamp(coord, ivec2(0), s - 1);
   return m_colors_prev[c.y * s.x + c.x];
 }
 
@@ -84,13 +84,13 @@ const ivec2 neighbor_directions[8]{
 
 const float neighbor_strengths[8]{
   1.0f,
-  1.0f / glm::sqrt(2.0f),
+  1.0f / sqrt(2.0f),
   1.0f,
-  1.0f / glm::sqrt(2.0f),
+  1.0f / sqrt(2.0f),
   1.0f,
-  1.0f / glm::sqrt(2.0f),
+  1.0f / sqrt(2.0f),
   1.0f,
-  1.0f / glm::sqrt(2.0f)
+  1.0f / sqrt(2.0f)
 };
 
 void FxRipple::update(double time, int frame_id) {
@@ -123,6 +123,38 @@ void FxRipple::renderPixel(vec3 &color, const vec2 &pos, const ivec2 &coord, dou
   color += vel;
   color *= gravity;
   
-  float brush = glm::smoothstep(m_random_radius, 0.0f, glm::distance(pos, m_random_pos));
+  float brush = smoothstep(m_random_radius, 0.0f, distance(pos, m_random_pos));
   color += m_random_color * (0.1f * brush);
+}
+
+
+
+void FxSensorTest::init(const ivec2 &size) {
+  Fx::init(size);
+
+  auto device = Serial::findDeviceByNameContains("cu.usbserial");
+  m_sensor = Serial::create(device, 9600);
+}
+
+void FxSensorTest::update(double time, int frame_id) {
+  std::array<uint8_t, 256> bytes;
+  const auto len = m_sensor->readAvailableBytes(bytes.data(), bytes.size());
+
+  for (std::size_t i = 0; i < len; ++i) {
+    m_sensor_min = min(int(bytes[i]), m_sensor_min);
+    m_sensor_max = max(int(bytes[i]), m_sensor_max);
+    m_sensor_value = int(bytes[i]);
+  }
+}
+
+void FxSensorTest::renderPixel(vec3 &color, const vec2 &pos, const ivec2 &coord, double time, int frame_id) {
+  if (coord.y < 4) {
+    color = vec3(float(int(m_sensor_value) - m_sensor_min) / float(m_sensor_max - m_sensor_min), 0.0f, 0.0f);
+  }
+  else if (coord.y < 8) {
+    color = vec3(0.0f, float(m_sensor_value) / 255.0f, 0.0f);
+  }
+  else {
+    color = vec3(0.0f, 0.0f, float(m_sensor_value) / 127.0f);
+  }
 }
