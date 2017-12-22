@@ -96,20 +96,26 @@ const float neighbor_strengths[8]{
 };
 
 void FxRipple::update(double time, int frame_id) {
-  if (auto_pluck && frame_id % 5 == 0) {
-    pluck(vec2(randFloat(m_render_bounds.getX1(), m_render_bounds.getX2()),
-               randFloat(m_render_bounds.getY1(), m_render_bounds.getY2())));
+  if (auto_pluck) {
+    if (frame_id % 40 == 0) {
+      pluck(vec2(randFloat(m_render_bounds.getX1(), m_render_bounds.getX2()),
+                randFloat(m_render_bounds.getY1(), m_render_bounds.getY2())));
+    }
+    if (frame_id % 40 == 20) {
+      m_opacity = 0.0f;
+    }
   }
 }
 
 void FxRipple::pluck(const vec2 &pos) {
   m_random_pos = pos;
-  m_random_color = vec3(randFloat(), randFloat(), randFloat());
-  m_random_radius = randFloat(5.0f, 10.0f);  
+  m_random_color = vec3(Colorf(CM_HSV, vec3(randFloat(), 1.0f, 1.0f)));
+  m_random_radius = randFloat(2.0f, 3.0f);
+  m_opacity = 0.03f;
 }
 
 void FxRipple::renderPixel(vec3 &color, const vec2 &pos, const ivec2 &coord, double time, int frame_id) {
-  const float friction = 0.25f;
+  const float friction = 0.2f;
   const float gravity = 0.99f;
   const float transmission = 0.025f;
   const float tightness = 0.075f;
@@ -130,7 +136,7 @@ void FxRipple::renderPixel(vec3 &color, const vec2 &pos, const ivec2 &coord, dou
   color *= gravity;
   
   float brush = smoothstep(m_random_radius, 0.0f, distance(pos, m_random_pos));
-  color += m_random_color * (0.1f * brush);
+  color += m_random_color * (brush * m_opacity);
 }
 
 

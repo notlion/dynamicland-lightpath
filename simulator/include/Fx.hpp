@@ -51,9 +51,10 @@ class FxRipple : public Fx {
   glm::vec3 m_random_color;
   glm::vec2 m_random_pos;
   float m_random_radius;
+  float m_opacity;
 
 public:
-  bool auto_pluck = false;
+  bool auto_pluck = true;
 
   void update(double time, int frame_id) override;
   void pluck(const glm::vec2 &pos) override;
