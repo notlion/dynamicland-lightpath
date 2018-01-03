@@ -12,6 +12,7 @@ protected:
   ci::Rectf m_render_bounds;
 
   ci::gl::TextureRef m_texture;
+  glm::ivec2 m_texture_size;
 
 public:
   virtual ~Fx() = default;

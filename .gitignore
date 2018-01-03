@@ -1,11 +1,4 @@
-*.dSYM
-*.exe
-simple
-rings
-rings_2d
-spokes
-dot
-mixer
-particle_trail
-
 .vscode/
+bin/
+cinder/
+fadecandy/

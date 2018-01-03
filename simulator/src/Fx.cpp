@@ -7,15 +7,13 @@ using namespace glm;
 using namespace ci;
 
 vec3 Fx::getColor(const ivec2 &coord) {
-  const auto &s = m_texture->getSize();
-  const auto c = clamp(coord, ivec2(0), s - 1);
-  return m_colors[c.y * s.x + c.x];
+  const auto c = clamp(coord, ivec2(0), m_texture_size - 1);
+  return m_colors[c.y * m_texture_size.x + c.x];
 }
 
 vec3 Fx::getPrevColor(const ivec2 &coord) {
-  const auto &s = m_texture->getSize();
-  const auto c = clamp(coord, ivec2(0), s - 1);
-  return m_colors_prev[c.y * s.x + c.x];
+  const auto c = clamp(coord, ivec2(0), m_texture_size - 1);
+  return m_colors_prev[c.y * m_texture_size.x + c.x];
 }
 
 void Fx::initPrivate(const ivec2 &size) {
@@ -23,29 +21,35 @@ void Fx::initPrivate(const ivec2 &size) {
   m_colors_prev.resize(size.x * size.y, vec3(0.0f));
   m_colors_next.resize(size.x * size.y, vec3(0.0f));
 
-  m_texture = gl::Texture::create(size.x,
-                                  size.y,
+  m_texture_size = size;
+
+#if !defined(CONFIG_HEADLESS)
+  m_texture = gl::Texture::create(m_texture_size.x,
+                                  m_texture_size.y,
                                   gl::Texture::Format()
                                       .target(GL_TEXTURE_RECTANGLE)
                                       .minFilter(GL_NEAREST)
                                       .magFilter(GL_NEAREST)
                                       .internalFormat(GL_RGB32F));
+#endif
 }
 
 void Fx::render(double time, int frame_id, const std::vector<vec2> &positions, const Rectf &bounds) {
   m_render_bounds = bounds;
 
-  const auto tex_width = m_texture->getWidth();
+  const auto tex_width = m_texture_size.y;
 
   for (int i = 0; i < m_colors_next.size(); ++i) {
     renderPixel(m_colors_next[i], positions[i], ivec2(i % tex_width, i / tex_width), time, frame_id);
   }
 
+#if !defined(CONFIG_HEADLESS)
   m_texture->update(Surface32f(&m_colors_next.front().x,
                                m_texture->getWidth(),
                                m_texture->getHeight(),
                                m_texture->getWidth() * sizeof(float) * 3,
                                SurfaceChannelOrder::RGB));
+#endif
 
   std::copy(m_colors.begin(), m_colors.end(), m_colors_prev.begin());
   std::copy(m_colors_next.begin(), m_colors_next.end(), m_colors.begin());
@@ -99,7 +103,7 @@ void FxRipple::update(double time, int frame_id) {
   if (auto_pluck) {
     if (frame_id % 40 == 0) {
       pluck(vec2(randFloat(m_render_bounds.getX1(), m_render_bounds.getX2()),
-                randFloat(m_render_bounds.getY1(), m_render_bounds.getY2())));
+                 randFloat(m_render_bounds.getY1(), m_render_bounds.getY2())));
     }
     if (frame_id % 40 == 20) {
       m_opacity = 0.0f;

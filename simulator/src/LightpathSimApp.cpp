@@ -86,10 +86,11 @@ public:
   void mouseDown(MouseEvent event) override;
   void mouseUp(MouseEvent event) override;
 
+#if !defined(CONFIG_HEADLESS)
   gl::VboMeshRef m_led_mesh;
   gl::BatchRef m_led_batch;
-
   gl::TextureRef m_splat_texture;
+#endif
 
   Rectf m_led_bounds;
 
@@ -106,22 +107,6 @@ public:
 };
 
 void LightpathSimApp::setup() {
-  m_splat_texture = gl::Texture::create(loadImage(loadResource("led_splat_0.png")),
-                                        gl::Texture::Format().mipmap());
-
-  m_led_mesh = gl::VboMesh::create(led_vertex_count,
-                                   GL_TRIANGLES,
-                                   { gl::VboMesh::Layout()
-                                         .usage(GL_STATIC_DRAW)
-                                         .attrib(geom::Attrib::POSITION, 2)
-                                         .attrib(geom::Attrib::TEX_COORD_0, 2)
-                                         .attrib(geom::Attrib::TEX_COORD_1, 2) });
-  auto led_prog = gl::GlslProg::create(led_shader_vs_src, led_shader_fs_src);
-  led_prog->uniform("u_led_tex", 0);
-  led_prog->uniform("u_splat_tex", 1);
-  led_prog->uniform("u_led_texture_size", vec2(led_texture_size));
-  m_led_batch = gl::Batch::create(m_led_mesh, led_prog);
-
   m_led_positions.resize(led_pixel_count);
 
   std::vector<vec2> positions;
@@ -164,24 +149,48 @@ void LightpathSimApp::setup() {
 
   m_led_bounds -= center;
 
+#if !defined(CONFIG_HEADLESS)
+  m_splat_texture = gl::Texture::create(loadImage(loadResource("led_splat_0.png")),
+                                        gl::Texture::Format().mipmap());
+
+  m_led_mesh = gl::VboMesh::create(led_vertex_count,
+                                   GL_TRIANGLES,
+                                   { gl::VboMesh::Layout()
+                                         .usage(GL_STATIC_DRAW)
+                                         .attrib(geom::Attrib::POSITION, 2)
+                                         .attrib(geom::Attrib::TEX_COORD_0, 2)
+                                         .attrib(geom::Attrib::TEX_COORD_1, 2) });
+  auto led_prog = gl::GlslProg::create(led_shader_vs_src, led_shader_fs_src);
+  led_prog->uniform("u_led_tex", 0);
+  led_prog->uniform("u_splat_tex", 1);
+  led_prog->uniform("u_led_texture_size", vec2(led_texture_size));
+  m_led_batch = gl::Batch::create(m_led_mesh, led_prog);
+
   m_led_mesh->bufferAttrib(geom::Attrib::POSITION, positions);
   m_led_mesh->bufferAttrib(geom::Attrib::TEX_COORD_0, texcoords);
   m_led_mesh->bufferAttrib(geom::Attrib::TEX_COORD_1, mask_texcoords);
+#endif
 
   // m_fx = std::make_unique<FxTest>();
   m_fx = std::make_unique<FxRipple>();
-  // m_fx = std::make_unique<FxSensorTest>();
+  // m_fx = std::make_unique<FxPlasma>();
 
   m_fx->initPrivate(led_texture_size);
   m_fx->init(led_texture_size);
 
-  m_opc_client = kp::opc::Client::create("localhost", 7890);
+  m_opc_client = kp::opc::Client::create("127.0.0.1", 7890, true, false);
 }
 
 void LightpathSimApp::resize() {}
 
 void LightpathSimApp::update() {
   const auto time = getElapsedSeconds();
+
+  const auto bounds_size = m_led_bounds.getSize();
+  const auto distance = glm::max(bounds_size.x, bounds_size.y) * 2.0f;
+
+  m_camera.setAspectRatio(getWindowAspectRatio());
+  m_camera.lookAt(glm::normalize(vec3(0.0f, 1.0f, 10.0f)) * distance, vec3(0.0f), vec3(0.0f, 0.0f, 1.0f));
 
   m_fx->update(time, m_frame_id);
 
@@ -238,12 +247,7 @@ void LightpathSimApp::update() {
 }
 
 void LightpathSimApp::draw() {
-  const auto bounds_size = m_led_bounds.getSize();
-  const auto distance = glm::max(bounds_size.x, bounds_size.y) * 2.0f;
-
-  m_camera.setAspectRatio(getWindowAspectRatio());
-  m_camera.lookAt(glm::normalize(vec3(0.0f, 1.0f, 10.0f)) * distance, vec3(0.0f), vec3(0.0f, 0.0f, 1.0f));
-  
+#if !defined(CONFIG_HEADLESS)
   gl::clear();
   gl::setMatrices(m_camera);
 
@@ -259,6 +263,7 @@ void LightpathSimApp::draw() {
   m_led_batch->getGlslProg()->uniform("u_splat_scale", 2.0f);
   m_led_batch->getGlslProg()->uniform("u_splat_opacity", 0.333f);
   m_led_batch->draw();
+#endif
 }
 
 void LightpathSimApp::mouseDown(MouseEvent event) {
@@ -274,8 +279,6 @@ void LightpathSimApp::prepareSettings(Settings *settings) {
   settings->setHighDensityDisplayEnabled();
   settings->setPowerManagementEnabled(false);
   settings->setWindowSize(1280, 720);
-  // settings->setAlwaysOnTop();
-  // settings->setFrameRate(5);
 }
 
 
