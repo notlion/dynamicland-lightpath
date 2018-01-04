@@ -101,11 +101,11 @@ const float neighbor_strengths[8]{
 
 void FxRipple::update(double time, int frame_id) {
   if (auto_pluck) {
-    if (frame_id % 40 == 0) {
+    if (frame_id % 10 == 0) {
       pluck(vec2(randFloat(m_render_bounds.getX1(), m_render_bounds.getX2()),
                  randFloat(m_render_bounds.getY1(), m_render_bounds.getY2())));
     }
-    if (frame_id % 40 == 20) {
+    if (frame_id % 10 == 5) {
       m_opacity = 0.0f;
     }
   }
@@ -115,7 +115,7 @@ void FxRipple::pluck(const vec2 &pos) {
   m_random_pos = pos;
   m_random_color = vec3(Colorf(CM_HSV, vec3(randFloat(), 1.0f, 1.0f)));
   m_random_radius = randFloat(2.0f, 3.0f);
-  m_opacity = 0.03f;
+  m_opacity = 0.05f;
 }
 
 void FxRipple::renderPixel(vec3 &color, const vec2 &pos, const ivec2 &coord, double time, int frame_id) {

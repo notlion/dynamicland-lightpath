@@ -1,0 +1,10 @@
+[Unit]
+Description=Dynamicland Lightpath LED Controller
+
+[Service]
+Type=forking
+User=root
+ExecStart=/home/pi/lightpath/start.sh
+
+[Install]
+WantedBy=multi-user.target

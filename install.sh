@@ -1,8 +1,10 @@
 #!/bin/bash
 
+set -x
+
 BUILD_TYPE=Release
 
-LIGHTPATH_DIR="/home/pi/lightpath"
+LIGHTPATH_DIR=$(realpath $(dirname "$0"))
 BIN_DIR="${LIGHTPATH_DIR}/bin"
 FADECANDY_DIR="${LIGHTPATH_DIR}/fadecandy"
 SIMULATOR_DIR="${LIGHTPATH_DIR}/simulator"
@@ -43,8 +45,9 @@ pushd ${FADECANDY_DIR}/server
 make submodules
 mkdir -p build
 pushd build
-cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${BIN_DIR}
+cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
 make -j 3
+mv -f bin/fcserver ${BIN_DIR}
 popd
 popd
 
@@ -61,3 +64,5 @@ pushd ${SIMULATOR_DIR}/build
 cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCINDER_TARGET_GL=${CINDER_TARGET_GL} -DCINDER_PATH=${CINDER_DIR} -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${BIN_DIR} -DCMAKE_CXX_FLAGS="-DCONFIG_HEADLESS"
 make -j 3
 popd
+
+sudo cp ${LIGHTPATH_DIR}/lightpath.service /etc/systemd/system/lightpath.service
