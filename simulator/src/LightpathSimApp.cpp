@@ -20,7 +20,7 @@ const ivec2 led_pixel_grid_size{ 8, 8 };
 const ivec2 led_panel_grid_size{ 1, 1 };
 #else
 const ivec2 led_pixel_grid_size{ 10, 12 };
-const ivec2 led_panel_grid_size{ 4, 2 };
+const ivec2 led_panel_grid_size{ 1, 1 };
 #endif
 
 const ivec2 led_texture_size{ led_pixel_grid_size * led_panel_grid_size };
@@ -98,7 +98,7 @@ public:
 
   CameraPersp m_camera;
 
-  std::unique_ptr<Fx> m_fx;
+  std::unique_ptr<FxPlasma> m_fx;
 
   kp::opc::ClientRef m_opc_client;
 
@@ -172,8 +172,8 @@ void LightpathSimApp::setup() {
 #endif
 
   // m_fx = std::make_unique<FxTest>();
-  m_fx = std::make_unique<FxRipple>();
-  // m_fx = std::make_unique<FxPlasma>();
+  // m_fx = std::make_unique<FxRipple>();
+  m_fx = std::make_unique<FxPlasma>();
 
   m_fx->initPrivate(led_texture_size);
   m_fx->init(led_texture_size);
@@ -202,6 +202,27 @@ void LightpathSimApp::update() {
     float t;
     if (ray.calcPlaneIntersection(vec3(0.0f), vec3(0.0f, 0.0f, 1.0f), &t)) {
       m_fx->pluck(vec2(ray.calcPosition(t)));
+    }
+  }
+
+  const auto inputAvailable = [] {
+    struct timeval tv;
+    fd_set fds;
+    tv.tv_sec = 0;
+    tv.tv_usec = 0;
+    FD_ZERO(&fds);
+    FD_SET(STDIN_FILENO, &fds);
+    select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv);
+    return (FD_ISSET(0, &fds));
+  };
+
+  if (inputAvailable()) {
+    std::string line;
+    std::getline(std::cin, line);
+    if (!line.empty()) {
+      // console() << "pluck!" << '\n';
+      // m_fx->pluck(m_led_bounds.getCenter());
+      m_fx->on = line.front() == '1';
     }
   }
 
