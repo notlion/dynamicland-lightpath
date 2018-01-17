@@ -10,7 +10,10 @@
 #include "OpcClient.h"
 #include "Fx.hpp"
 
-#define CONFIG_NEOPIXEL_88
+#include <fcntl.h>
+#include <iostream>
+
+// #define CONFIG_NEOPIXEL_88
 
 using namespace ci;
 using namespace ci::app;

@@ -64,15 +64,23 @@ void Fx::pluck(const vec2 &pos) {}
 // Shaders
 
 void FxTest::renderPixel(vec3 &color, const vec2 &pos, const ivec2 &coord, double time, int frame_id) {
-  color = vec3((coord.x + frame_id / 10) % 2);
+  vec2 c = coord + frame_id;
+  color = vec3(c.x / float(m_texture_size.x - 1),
+               0.0f,
+               c.y / float(m_texture_size.y - 1));
 }
 
 
 
 void FxPlasma::renderPixel(vec3 &color, const vec2 &pos, const ivec2 &coord, double time, int frame_id) {
-  color = (vec3(sin((sin(pos.x) + cos(pos.y)) * 0.235f + time),
-                cos((cos(-pos.x * 0.337f) + sin(pos.y * 0.263f)) * 0.821f + time * 0.721f),
-                sin((sin(pos.x * 0.0831f) + cos(pos.t * 0.0731f)) * 1.2387f + time * 0.237f)) + 1.0f) * 0.5f;
+  if (on) {
+    color = (vec3(sin((sin(pos.x) + cos(pos.y)) * 0.235f + time),
+                  cos((cos(-pos.x * 0.337f) + sin(pos.y * 0.263f)) * 0.821f + time * 0.721f),
+                  sin((sin(pos.x * 0.0831f) + cos(pos.t * 0.0731f)) * 1.2387f + time * 0.237f)) + 1.0f) * 0.5f;
+  }
+  else {
+    color = vec3(0.0f);
+  }
 }
 
 
@@ -100,6 +108,12 @@ const float neighbor_strengths[8]{
 };
 
 void FxRipple::update(double time, int frame_id) {
+  m_last_frame_id = frame_id;
+
+  if (m_pluck_frame_id + 1 < frame_id) {
+    m_opacity = 0.0f;
+  }
+
   if (auto_pluck) {
     if (frame_id % 10 == 0) {
       pluck(vec2(randFloat(m_render_bounds.getX1(), m_render_bounds.getX2()),
@@ -116,6 +130,7 @@ void FxRipple::pluck(const vec2 &pos) {
   m_random_color = vec3(Colorf(CM_HSV, vec3(randFloat(), 1.0f, 1.0f)));
   m_random_radius = randFloat(2.0f, 3.0f);
   m_opacity = 0.05f;
+  m_pluck_frame_id = m_last_frame_id;
 }
 
 void FxRipple::renderPixel(vec3 &color, const vec2 &pos, const ivec2 &coord, double time, int frame_id) {

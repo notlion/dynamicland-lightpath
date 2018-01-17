@@ -45,6 +45,8 @@ public:
 
 class FxPlasma : public Fx {
 public:
+  bool on = false;
+
   void renderPixel(glm::vec3 &color, const glm::vec2 &pos, const glm::ivec2 &coord, double time, int frame_id) override;
 };
 
@@ -54,8 +56,11 @@ class FxRipple : public Fx {
   float m_random_radius;
   float m_opacity;
 
+  int m_pluck_frame_id = -1;
+  int m_last_frame_id = 0;
+
 public:
-  bool auto_pluck = true;
+  bool auto_pluck = false;
 
   void update(double time, int frame_id) override;
   void pluck(const glm::vec2 &pos) override;
