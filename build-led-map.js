@@ -32,13 +32,19 @@ const makePanel = (sx, sy, si) => {
   return map;
 };
 
-let map = [];
-let si = 0;
-for (let y = 0; y < PANELS_Y; ++y) {
-  for (let x = 0; x < PANELS_X; ++x) {
-    map = map.concat(makePanel(x, y, si));
-    si += 128;
+const makePanelGroup = (sx, sy) => {
+  let map = [];
+  let si = 0;
+  for (let y = 0; y < PANELS_Y; ++y) {
+    for (let x = 0; x < PANELS_X; ++x) {
+      map = map.concat(makePanel(sx + x, sy + y, si));
+      si += 128;
+    }
   }
-}
+  return map;
+};
 
-console.log(JSON.stringify(map));
+for (let y = 0; y < 2; ++y) {
+  const map = makePanelGroup(0, GRID_SIZE_Y * y);
+  console.log(`Group ${y}: `, JSON.stringify(map), "\n");
+}

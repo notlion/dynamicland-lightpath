@@ -23,7 +23,7 @@ const ivec2 led_pixel_grid_size{ 8, 8 };
 const ivec2 led_panel_grid_size{ 1, 1 };
 #else
 const ivec2 led_pixel_grid_size{ 10, 12 };
-const ivec2 led_panel_grid_size{ 2, 2 };
+const ivec2 led_panel_grid_size{ 4, 2 };
 #endif
 
 const ivec2 led_texture_size{ led_pixel_grid_size * led_panel_grid_size };
