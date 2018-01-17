@@ -23,7 +23,7 @@ const ivec2 led_pixel_grid_size{ 8, 8 };
 const ivec2 led_panel_grid_size{ 1, 1 };
 #else
 const ivec2 led_pixel_grid_size{ 10, 12 };
-const ivec2 led_panel_grid_size{ 1, 1 };
+const ivec2 led_panel_grid_size{ 2, 2 };
 #endif
 
 const ivec2 led_texture_size{ led_pixel_grid_size * led_panel_grid_size };
@@ -181,7 +181,7 @@ void LightpathSimApp::setup() {
   m_fx->initPrivate(led_texture_size);
   m_fx->init(led_texture_size);
 
-  m_opc_client = kp::opc::Client::create("127.0.0.1", 7890, true, false);
+  m_opc_client = kp::opc::Client::create("localhost", 7890, true, false);
 }
 
 void LightpathSimApp::resize() {}
@@ -225,7 +225,9 @@ void LightpathSimApp::update() {
     if (!line.empty()) {
       // console() << "pluck!" << '\n';
       // m_fx->pluck(m_led_bounds.getCenter());
-      m_fx->on = line.front() == '1';
+      // m_fx->on = line.front() == '1';
+
+      // TODO(ryan): DO SOMETHING WHEN A TILE IS TOGGLED!!!!!
     }
   }
 
@@ -245,20 +247,17 @@ void LightpathSimApp::update() {
     }
 #else
     {
-      int i = 0;
-      for (int x = 4; x >= 0; --x) {
-        for (int y = 0; y < 12; ++y) {
-          const auto &c = m_fx->getColor(ivec2(x, x % 2 == 0 ? y : 11 - y));
-          m_opc_client->setLED(i++, Colorf(c.r, c.g, c.b));
-        }
-      }
-    }
-    {
-      int i = 64;
-      for (int x = 5; x < 10; ++x) {
-        for (int y = 0; y < 12; ++y) {
-          const auto &c = m_fx->getColor(ivec2(x, x % 2 == 1 ? y : 11 - y));
-          m_opc_client->setLED(i++, Colorf(c.r, c.g, c.b));
+      ivec2 p, c;
+      for (p.y = 0; p.y < led_panel_grid_size.y; ++p.y) {
+        for (p.x = 0; p.x < led_panel_grid_size.x; ++p.x) {
+          for (c.y = 0; c.y < led_pixel_grid_size.y; ++c.y) {
+            for (c.x = 0; c.x < led_pixel_grid_size.x; ++c.x) {
+              const auto &color = m_fx->getColor(c);
+              const auto cc = p * led_pixel_grid_size + c;
+              const auto i = cc.x * led_texture_size.y + cc.y;
+              m_opc_client->setLED(i, Colorf(color.r, color.g, color.b));
+            }
+          }
         }
       }
     }
@@ -306,4 +305,4 @@ void LightpathSimApp::prepareSettings(Settings *settings) {
 }
 
 
-CINDER_APP(LightpathSimApp, RendererGl(RendererGl::Options().msaa(8)), LightpathSimApp::prepareSettings)
+CINDER_APP(LightpathSimApp, RendererGl(), LightpathSimApp::prepareSettings)

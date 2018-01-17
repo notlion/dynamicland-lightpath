@@ -109,7 +109,7 @@ void Client::onClientError(std::string err, size_t bytesTransferred) {
 void Client::write() {
   // This sample is meant to work with only one session at a time.
   if (mTcpSession && mTcpSession->getSocket()->is_open()) {
-    CI_LOG_V("Writing to: " + mHost + ":" + ci::toString(mPort));
+    // CI_LOG_V("Writing to: " + mHost + ":" + ci::toString(mPort));
     mTcpSession->write(mLedBuffer);
   }
 }
@@ -130,7 +130,7 @@ void Client::onSessionClose() {
 }
 
 void Client::onSessionWrite(size_t bytesTransferred) {
-  CI_LOG_V(ci::toString(bytesTransferred) + " bytes written");
+  // CI_LOG_V(ci::toString(bytesTransferred) + " bytes written");
   mNumMessagesSent++;
   if (!mIsLongConnection) {
     // Close the connection and re-open for the next write

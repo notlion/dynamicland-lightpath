@@ -45,8 +45,6 @@ public:
 
 class FxPlasma : public Fx {
 public:
-  bool on = false;
-
   void renderPixel(glm::vec3 &color, const glm::vec2 &pos, const glm::ivec2 &coord, double time, int frame_id) override;
 };
 

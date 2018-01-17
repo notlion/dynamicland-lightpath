@@ -73,14 +73,10 @@ void FxTest::renderPixel(vec3 &color, const vec2 &pos, const ivec2 &coord, doubl
 
 
 void FxPlasma::renderPixel(vec3 &color, const vec2 &pos, const ivec2 &coord, double time, int frame_id) {
-  if (on) {
-    color = (vec3(sin((sin(pos.x) + cos(pos.y)) * 0.235f + time),
-                  cos((cos(-pos.x * 0.337f) + sin(pos.y * 0.263f)) * 0.821f + time * 0.721f),
-                  sin((sin(pos.x * 0.0831f) + cos(pos.t * 0.0731f)) * 1.2387f + time * 0.237f)) + 1.0f) * 0.5f;
-  }
-  else {
-    color = vec3(0.0f);
-  }
+  color = (vec3(sin((sin(pos.x) + cos(pos.y)) * 0.235f + time),
+                cos((cos(-pos.x * 0.337f) + sin(pos.y * 0.263f)) * 0.821f + time * 0.721f),
+                sin((sin(pos.x * 0.0831f) + cos(pos.t * 0.0731f)) * 1.2387f + time * 0.237f)) + 1.0f) * 0.5f;
+  color *= 0.5f;
 }
 
 
