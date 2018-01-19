@@ -200,7 +200,7 @@ void LightpathSimApp::setup() {
   m_test_pattern.initPrivate(led_texture_size, m_tiles);
   m_test_pattern.init(led_texture_size);
 
-  m_fx = &m_test_pattern;
+  m_fx = &m_plasma;
 
   m_opc_client = kp::opc::Client::create("localhost", 7890, true, false);
 }
@@ -266,8 +266,8 @@ void LightpathSimApp::update() {
       for (p.x = 0; p.x < led_panel_grid_size.x; ++p.x) {
         for (c.y = 0; c.y < led_pixel_grid_size.y; ++c.y) {
           for (c.x = 0; c.x < led_pixel_grid_size.x; ++c.x) {
-            const auto &color = m_fx->getColor(c);
             const auto cc = p * led_pixel_grid_size + c;
+            const auto &color = m_fx->getColor(cc);
             const auto i = cc.x * led_texture_size.y + cc.y;
             m_opc_client->setLED(i, Colorf(color.r, color.g, color.b));
           }

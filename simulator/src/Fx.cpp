@@ -85,6 +85,7 @@ void FxTestPattern::init(const glm::ivec2 &size) {
 void FxTestPattern::renderPixel(vec3 &color, const vec2 &pos, const ivec2 &coord, double time, int frame_id) {
   const auto &c = m_test_image->getPixel(ivec2(coord.x, m_texture_size.y - coord.y - 1));
   color = vec3(c.r / 255.0f, c.g / 255.0f, c.b / 255.0f);
+  color *= mix(0.5f, 1.0f, sin(pos.x + pos.y + time) * 0.5f + 0.5f);
 }
 
 
