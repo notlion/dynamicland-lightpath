@@ -3,6 +3,7 @@
 #include "cinder/Rect.h"
 #include "cinder/Serial.h"
 #include "cinder/Vector.h"
+#include "cinder/Surface.h"
 #include "cinder/gl/Texture.h"
 
 struct Tile {
@@ -54,8 +55,11 @@ public:
 };
 
 
-class FxTest : public Fx {
+class FxTestPattern : public Fx {
+  ci::SurfaceRef m_test_image;
+
 public:
+  void init(const glm::ivec2 &size) override;
   void renderPixel(glm::vec3 &color, const glm::vec2 &pos, const glm::ivec2 &coord, double time, int frame_id) override;
 };
 

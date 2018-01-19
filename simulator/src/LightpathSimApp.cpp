@@ -108,6 +108,7 @@ public:
   Fx *m_fx = nullptr;
   FxRipple m_ripple;
   FxPlasma m_plasma;
+  FxTestPattern m_test_pattern;
 
   kp::opc::ClientRef m_opc_client;
 
@@ -196,7 +197,10 @@ void LightpathSimApp::setup() {
   m_plasma.initPrivate(led_texture_size, m_tiles);
   m_plasma.init(led_texture_size);
 
-  m_fx = &m_ripple;
+  m_test_pattern.initPrivate(led_texture_size, m_tiles);
+  m_test_pattern.init(led_texture_size);
+
+  m_fx = &m_test_pattern;
 
   m_opc_client = kp::opc::Client::create("localhost", 7890, true, false);
 }

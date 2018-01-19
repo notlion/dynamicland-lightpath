@@ -1,5 +1,7 @@
 #include "cinder/Rand.h"
 #include "cinder/Log.h"
+#include "cinder/ImageIo.h"
+#include "cinder/app/App.h"
 
 #include "Fx.hpp"
 
@@ -76,11 +78,13 @@ void Fx::update(double time, int frame_id) {}
 ////////////////////////////////////////////////////////////////
 // Shaders
 
-void FxTest::renderPixel(vec3 &color, const vec2 &pos, const ivec2 &coord, double time, int frame_id) {
-  vec2 c = coord + frame_id;
-  color = vec3(c.x / float(m_texture_size.x - 1),
-               0.0f,
-               c.y / float(m_texture_size.y - 1));
+void FxTestPattern::init(const glm::ivec2 &size) {
+  m_test_image = Surface::create(loadImage(app::loadResource("led_test_pattern.png")));
+}
+
+void FxTestPattern::renderPixel(vec3 &color, const vec2 &pos, const ivec2 &coord, double time, int frame_id) {
+  const auto &c = m_test_image->getPixel(ivec2(coord.x, m_texture_size.y - coord.y - 1));
+  color = vec3(c.r / 255.0f, c.g / 255.0f, c.b / 255.0f);
 }
 
 

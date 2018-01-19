@@ -22,6 +22,7 @@ ci_make_app(
               ${ASIO_SOURCES}
 
   RESOURCES   ${APP_PATH}/res/led_splat_0.png
+              ${APP_PATH}/res/led_test_pattern.png
 
   CINDER_PATH ${CINDER_PATH}
 )
