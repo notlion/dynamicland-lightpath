@@ -17,6 +17,7 @@ ci_make_app(
 
   SOURCES     ${APP_PATH}/src/LightpathSimApp.cpp
               ${APP_PATH}/src/Fx.cpp
+              ${APP_PATH}/src/FxRipple.cpp
               ${APP_PATH}/src/OpcClient.cpp
               ${ASIO_SOURCES}
 

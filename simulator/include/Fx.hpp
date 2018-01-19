@@ -1,7 +1,18 @@
+#pragma once
+
 #include "cinder/Rect.h"
 #include "cinder/Serial.h"
 #include "cinder/Vector.h"
 #include "cinder/gl/Texture.h"
+
+struct Tile {
+  std::size_t index;
+
+  ci::Rectf bounds;
+
+  bool on = false;
+  bool on_prev = false;
+};
 
 class Fx {
 protected:
@@ -14,6 +25,8 @@ protected:
   ci::gl::TextureRef m_texture;
   glm::ivec2 m_texture_size;
 
+  std::vector<Tile> m_tiles;
+
 public:
   virtual ~Fx() = default;
 
@@ -25,16 +38,19 @@ public:
     return m_colors;
   }
 
-  glm::vec3 getColor(const glm::ivec2 &coord);
-  glm::vec3 getPrevColor(const glm::ivec2 &coord);
+  glm::vec3 getColor(const glm::ivec2 &coord) const;
+  glm::vec3 getPrevColor(const glm::ivec2 &coord) const;
 
-  void initPrivate(const glm::ivec2 &size);
+  const Tile *getTile(const glm::vec2 &position) const;
+
+  void initPrivate(const glm::ivec2 &size, const std::vector<Tile> &tiles);
+  void updatePrivate(const std::vector<Tile> &tiles);
+
   void render(double time, int frame_id, const std::vector<glm::vec2> &positions, const ci::Rectf &bounds);
 
   virtual void init(const glm::ivec2 &size);
   virtual void update(double time, int frame_id);
   virtual void renderPixel(glm::vec3 &color, const glm::vec2 &pos, const glm::ivec2 &coord, double time, int frame_id) = 0;
-  virtual void pluck(const glm::vec2 &pos);
 };
 
 
@@ -45,23 +61,6 @@ public:
 
 class FxPlasma : public Fx {
 public:
-  void renderPixel(glm::vec3 &color, const glm::vec2 &pos, const glm::ivec2 &coord, double time, int frame_id) override;
-};
-
-class FxRipple : public Fx {
-  glm::vec3 m_random_color;
-  glm::vec2 m_random_pos;
-  float m_random_radius;
-  float m_opacity;
-
-  int m_pluck_frame_id = -1;
-  int m_last_frame_id = 0;
-
-public:
-  bool auto_pluck = false;
-
-  void update(double time, int frame_id) override;
-  void pluck(const glm::vec2 &pos) override;
   void renderPixel(glm::vec3 &color, const glm::vec2 &pos, const glm::ivec2 &coord, double time, int frame_id) override;
 };
 

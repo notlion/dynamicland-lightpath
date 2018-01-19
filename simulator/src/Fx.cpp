@@ -6,21 +6,31 @@
 using namespace glm;
 using namespace ci;
 
-vec3 Fx::getColor(const ivec2 &coord) {
+vec3 Fx::getColor(const ivec2 &coord) const {
   const auto c = clamp(coord, ivec2(0), m_texture_size - 1);
-  return m_colors[c.y * m_texture_size.x + c.x];
+  const auto i = c.y * m_texture_size.x + c.x;
+  return m_colors[i];
 }
 
-vec3 Fx::getPrevColor(const ivec2 &coord) {
+vec3 Fx::getPrevColor(const ivec2 &coord) const {
   const auto c = clamp(coord, ivec2(0), m_texture_size - 1);
-  return m_colors_prev[c.y * m_texture_size.x + c.x];
+  const auto i = c.y * m_texture_size.x + c.x;
+  return m_colors_prev[i];
 }
 
-void Fx::initPrivate(const ivec2 &size) {
+const Tile *Fx::getTile(const glm::vec2 &position) const {
+  for (const auto &tile : m_tiles) {
+    if (tile.bounds.contains(position)) return &tile;
+  }
+  return nullptr;
+}
+
+void Fx::initPrivate(const ivec2 &size, const std::vector<Tile> &tiles) {
   m_colors.resize(size.x * size.y, vec3(0.0f));
   m_colors_prev.resize(size.x * size.y, vec3(0.0f));
   m_colors_next.resize(size.x * size.y, vec3(0.0f));
 
+  m_tiles = tiles;
   m_texture_size = size;
 
 #if !defined(CONFIG_HEADLESS)
@@ -34,10 +44,14 @@ void Fx::initPrivate(const ivec2 &size) {
 #endif
 }
 
+void Fx::updatePrivate(const std::vector<Tile> &tiles) {
+  m_tiles = tiles;
+}
+
 void Fx::render(double time, int frame_id, const std::vector<vec2> &positions, const Rectf &bounds) {
   m_render_bounds = bounds;
 
-  const auto tex_width = m_texture_size.y;
+  const auto tex_width = m_texture_size.x;
 
   for (int i = 0; i < m_colors_next.size(); ++i) {
     renderPixel(m_colors_next[i], positions[i], ivec2(i % tex_width, i / tex_width), time, frame_id);
@@ -57,7 +71,6 @@ void Fx::render(double time, int frame_id, const std::vector<vec2> &positions, c
 
 void Fx::init(const ivec2 &size) {}
 void Fx::update(double time, int frame_id) {}
-void Fx::pluck(const vec2 &pos) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -77,81 +90,6 @@ void FxPlasma::renderPixel(vec3 &color, const vec2 &pos, const ivec2 &coord, dou
                 cos((cos(-pos.x * 0.337f) + sin(pos.y * 0.263f)) * 0.821f + time * 0.721f),
                 sin((sin(pos.x * 0.0831f) + cos(pos.t * 0.0731f)) * 1.2387f + time * 0.237f)) + 1.0f) * 0.5f;
   color *= 0.5f;
-}
-
-
-
-const ivec2 neighbor_directions[8]{
-  ivec2{  0, -1 },
-  ivec2{  1, -1 },
-  ivec2{  1,  0 },
-  ivec2{  1,  1 },
-  ivec2{  0,  1 },
-  ivec2{ -1,  1 },
-  ivec2{ -1,  0 },
-  ivec2{ -1, -1 }
-};
-
-const float neighbor_strengths[8]{
-  1.0f,
-  1.0f / sqrt(2.0f),
-  1.0f,
-  1.0f / sqrt(2.0f),
-  1.0f,
-  1.0f / sqrt(2.0f),
-  1.0f,
-  1.0f / sqrt(2.0f)
-};
-
-void FxRipple::update(double time, int frame_id) {
-  m_last_frame_id = frame_id;
-
-  if (m_pluck_frame_id + 1 < frame_id) {
-    m_opacity = 0.0f;
-  }
-
-  if (auto_pluck) {
-    if (frame_id % 10 == 0) {
-      pluck(vec2(randFloat(m_render_bounds.getX1(), m_render_bounds.getX2()),
-                 randFloat(m_render_bounds.getY1(), m_render_bounds.getY2())));
-    }
-    if (frame_id % 10 == 5) {
-      m_opacity = 0.0f;
-    }
-  }
-}
-
-void FxRipple::pluck(const vec2 &pos) {
-  m_random_pos = pos;
-  m_random_color = vec3(Colorf(CM_HSV, vec3(randFloat(), 1.0f, 1.0f)));
-  m_random_radius = randFloat(2.0f, 3.0f);
-  m_opacity = 0.05f;
-  m_pluck_frame_id = m_last_frame_id;
-}
-
-void FxRipple::renderPixel(vec3 &color, const vec2 &pos, const ivec2 &coord, double time, int frame_id) {
-  const float friction = 0.2f;
-  const float gravity = 0.99f;
-  const float transmission = 0.025f;
-  const float tightness = 0.075f;
-  
-  const vec3 &prev = getPrevColor(coord);
-  vec3 vel = color - prev;
-  vel *= 1.0f - friction;
-
-  for (int i = 0; i < 8; ++i) {
-    const auto crd = coord + neighbor_directions[i];
-    const auto &c = getColor(crd);
-    const auto &cp = getPrevColor(crd);
-    vel += (c - color) * neighbor_strengths[i] * tightness;
-    vel += (c - cp) * neighbor_strengths[i] * transmission;
-  }
-  
-  color += vel;
-  color *= gravity;
-  
-  float brush = smoothstep(m_random_radius, 0.0f, distance(pos, m_random_pos));
-  color += m_random_color * (brush * m_opacity);
 }
 
 

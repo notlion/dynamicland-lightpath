@@ -9,6 +9,7 @@
 
 #include "OpcClient.h"
 #include "Fx.hpp"
+#include "FxRipple.hpp"
 
 #include <fcntl.h>
 #include <iostream>
@@ -32,8 +33,9 @@ const int led_vertex_count = led_pixel_count * 6; // Two triangles each
 
 const vec2 led_pixel_padding{ 1.0f };
 const vec2 led_panel_padding{ 2.0f };
+const vec2 led_panel_size = led_pixel_padding * vec2(led_pixel_grid_size);
 const vec2 led_pixel_spacing = led_pixel_padding;
-const vec2 led_panel_spacing = led_pixel_spacing * vec2(led_pixel_grid_size) + led_panel_padding;
+const vec2 led_panel_spacing = led_panel_size + led_panel_padding;
 
 const std::string led_shader_vs_src = R"(
 #version 150 core
@@ -88,6 +90,7 @@ public:
   void draw() override;
   void mouseDown(MouseEvent event) override;
   void mouseUp(MouseEvent event) override;
+  void keyDown(KeyEvent event) override;
 
 #if !defined(CONFIG_HEADLESS)
   gl::VboMeshRef m_led_mesh;
@@ -98,15 +101,18 @@ public:
   Rectf m_led_bounds;
 
   std::vector<vec2> m_led_positions;
+  std::vector<Tile> m_tiles;
 
   CameraPersp m_camera;
-
-  std::unique_ptr<FxPlasma> m_fx;
+ 
+  Fx *m_fx = nullptr;
+  FxRipple m_ripple;
+  FxPlasma m_plasma;
 
   kp::opc::ClientRef m_opc_client;
 
   int m_frame_id = 0;
-  bool m_mouse_is_down = false;
+  vec3 m_mouse_world_pos;
 };
 
 void LightpathSimApp::setup() {
@@ -119,8 +125,17 @@ void LightpathSimApp::setup() {
   texcoords.reserve(led_vertex_count);
   mask_texcoords.reserve(led_vertex_count);
 
+  m_tiles.reserve(led_panel_grid_size.x * led_panel_grid_size.y);
+
   for (int py = 0; py < led_panel_grid_size.y; ++py) {
     for (int px = 0; px < led_panel_grid_size.x; ++px) {
+      m_tiles.emplace_back();
+      
+      auto &tile = m_tiles.back();
+      tile.index = m_tiles.size() - 1;
+      tile.bounds = Rectf(vec2(px, py) * led_panel_spacing, vec2(px, py) * led_panel_spacing + led_panel_size);
+      tile.bounds -= vec2(led_pixel_spacing * 0.5f);
+
       for (int y = 0; y < led_pixel_grid_size.y; ++y) {
         for (int x = 0; x < led_pixel_grid_size.x; ++x) {
           mask_texcoords.emplace_back(0.0f, 0.0f);
@@ -149,6 +164,7 @@ void LightpathSimApp::setup() {
   const auto center = m_led_bounds.getCenter();
   for (auto &p : positions) p -= center;
   for (auto &p : m_led_positions) p -= center;
+  for (auto &t : m_tiles) t.bounds -= center;
 
   m_led_bounds -= center;
 
@@ -174,12 +190,13 @@ void LightpathSimApp::setup() {
   m_led_mesh->bufferAttrib(geom::Attrib::TEX_COORD_1, mask_texcoords);
 #endif
 
-  // m_fx = std::make_unique<FxTest>();
-  // m_fx = std::make_unique<FxRipple>();
-  m_fx = std::make_unique<FxPlasma>();
+  m_ripple.initPrivate(led_texture_size, m_tiles);
+  m_ripple.init(led_texture_size);
 
-  m_fx->initPrivate(led_texture_size);
-  m_fx->init(led_texture_size);
+  m_plasma.initPrivate(led_texture_size, m_tiles);
+  m_plasma.init(led_texture_size);
+
+  m_fx = &m_ripple;
 
   m_opc_client = kp::opc::Client::create("localhost", 7890, true, false);
 }
@@ -193,19 +210,10 @@ void LightpathSimApp::update() {
   const auto distance = glm::max(bounds_size.x, bounds_size.y) * 2.0f;
 
   m_camera.setAspectRatio(getWindowAspectRatio());
-  m_camera.lookAt(glm::normalize(vec3(0.0f, 1.0f, 10.0f)) * distance, vec3(0.0f), vec3(0.0f, 0.0f, 1.0f));
+  m_camera.lookAt(glm::normalize(vec3(0.0f, 1.0f, -10.0f)) * distance, vec3(0.0f), vec3(0.0f, 0.0f, -1.0f));
 
-  m_fx->update(time, m_frame_id);
-
-  if (m_mouse_is_down) {
-    const auto window_size = getWindowSize();
-    const auto mouse_pos = getMousePos();
-    const auto ray = m_camera.generateRay(vec2(mouse_pos.x, window_size.y - mouse_pos.y), window_size);
-    
-    float t;
-    if (ray.calcPlaneIntersection(vec3(0.0f), vec3(0.0f, 0.0f, 1.0f), &t)) {
-      m_fx->pluck(vec2(ray.calcPosition(t)));
-    }
+  for (auto &tile : m_tiles) {
+    tile.on_prev = tile.on;
   }
 
   const auto inputAvailable = [] {
@@ -231,32 +239,32 @@ void LightpathSimApp::update() {
     }
   }
 
-  m_fx->render(time, m_frame_id, m_led_positions, m_led_bounds);
+  if (m_fx) {
+    m_fx->updatePrivate(m_tiles);
+    m_fx->update(time, m_frame_id);
+    m_fx->render(time, m_frame_id, m_led_positions, m_led_bounds);
+  }
 
   // Write to Fadecandy
   {
 #if defined(CONFIG_NEOPIXEL_88)
-    {
-      int i = 0;
-      for (int y = 7; y >= 0; --y) {
-        for (int x = 7; x >= 0; --x) {
-          const auto &c = m_fx->getColor(ivec2(x, y));
-          m_opc_client->setLED(i++, Colorf(c.r, c.g, c.b));
-        }
+    int i = 0;
+    for (int y = 7; y >= 0; --y) {
+      for (int x = 7; x >= 0; --x) {
+        const auto &c = m_fx->getColor(ivec2(x, y));
+        m_opc_client->setLED(i++, Colorf(c.r, c.g, c.b));
       }
     }
 #else
-    {
-      ivec2 p, c;
-      for (p.y = 0; p.y < led_panel_grid_size.y; ++p.y) {
-        for (p.x = 0; p.x < led_panel_grid_size.x; ++p.x) {
-          for (c.y = 0; c.y < led_pixel_grid_size.y; ++c.y) {
-            for (c.x = 0; c.x < led_pixel_grid_size.x; ++c.x) {
-              const auto &color = m_fx->getColor(c);
-              const auto cc = p * led_pixel_grid_size + c;
-              const auto i = cc.x * led_texture_size.y + cc.y;
-              m_opc_client->setLED(i, Colorf(color.r, color.g, color.b));
-            }
+    ivec2 p, c;
+    for (p.y = 0; p.y < led_panel_grid_size.y; ++p.y) {
+      for (p.x = 0; p.x < led_panel_grid_size.x; ++p.x) {
+        for (c.y = 0; c.y < led_pixel_grid_size.y; ++c.y) {
+          for (c.x = 0; c.x < led_pixel_grid_size.x; ++c.x) {
+            const auto &color = m_fx->getColor(c);
+            const auto cc = p * led_pixel_grid_size + c;
+            const auto i = cc.x * led_texture_size.y + cc.y;
+            m_opc_client->setLED(i, Colorf(color.r, color.g, color.b));
           }
         }
       }
@@ -274,7 +282,7 @@ void LightpathSimApp::draw() {
   gl::clear();
   gl::setMatrices(m_camera);
 
-  gl::rotate(glm::cos(getElapsedSeconds() / glm::pi<float>()) * 0.05f);
+  // gl::rotate(glm::cos(getElapsedSeconds() / glm::pi<float>()) * 0.05f);
 
   gl::disableDepthRead();
   gl::disableDepthWrite();
@@ -286,15 +294,42 @@ void LightpathSimApp::draw() {
   m_led_batch->getGlslProg()->uniform("u_splat_scale", 2.0f);
   m_led_batch->getGlslProg()->uniform("u_splat_opacity", 0.333f);
   m_led_batch->draw();
+
+  int i = 0;
+  for (const auto &tile : m_tiles) {
+    gl::drawStrokedRect(tile.bounds);
+    // gl::drawStringCentered(std::to_string(i++), tile.bounds.getCenter());
+  }
+
+  gl::drawStrokedCircle(m_mouse_world_pos, 1.0f, 16);
 #endif
 }
 
 void LightpathSimApp::mouseDown(MouseEvent event) {
-  m_mouse_is_down = true;
+  const auto window_size = getWindowSize();
+  const auto mouse_pos = getMousePos();
+  const auto ray = m_camera.generateRay(vec2(mouse_pos), window_size);
+  
+  float t;
+  if (ray.calcPlaneIntersection(vec3(0.0f), vec3(0.0f, 0.0f, 1.0f), &t)) {
+    m_mouse_world_pos = ray.calcPosition(t);
+    const auto pos = vec2(m_mouse_world_pos);
+    for (auto &tile : m_tiles) {
+      if (tile.bounds.contains(pos)) {
+        tile.on = !tile.on;
+      }
+    }
+  }
 }
 
 void LightpathSimApp::mouseUp(MouseEvent event) {
-  m_mouse_is_down = false;
+}
+
+void LightpathSimApp::keyDown(KeyEvent event) {
+  switch (event.getChar()) {
+    case '1': m_fx = &m_ripple; break;
+    case '2': m_fx = &m_plasma; break;
+  }
 }
 
 
