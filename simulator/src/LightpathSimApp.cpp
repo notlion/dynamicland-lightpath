@@ -231,11 +231,12 @@ void LightpathSimApp::update() {
     std::string line;
     std::getline(std::cin, line);
     if (!line.empty()) {
-      // console() << "pluck!" << '\n';
-      // m_fx->pluck(m_led_bounds.getCenter());
-      // m_fx->on = line.front() == '1';
-
-      // TODO(ryan): DO SOMETHING WHEN A TILE IS TOGGLED!!!!!
+      for (auto it = line.begin(); it != line.end(); ++it) {
+        const auto c = *it;
+        if (c == '0' || c == '1') {
+          m_tiles[std::distance(line.begin(), it)].on = c == '1';
+        }
+      }
     }
   }
 
