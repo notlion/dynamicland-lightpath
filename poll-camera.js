@@ -17,15 +17,14 @@ const cameras = [
   }
 ];
 
-let combined_reading = false;
 let waiting = false;
 
 const onPoll = () => {
-  const reading = cameras[0].reading && cameras[1].reading;
-  // if (combined_reading != reading) {
-    combined_reading = reading;
-    console.log(combined_reading ? '1' : '0');
-  // }
+  let readings = "";
+  for (let i = 0; i < 8; ++i) {
+    readings += (cameras[0].reading[i] && cameras[1].reading[i]) ? "1" : "0";
+  }
+  console.log(readings);
 };
 
 const pollCamera = (camera, i) => {
@@ -56,7 +55,11 @@ const pollCamera = (camera, i) => {
       res.on('end', () => {
         try {
           const json = JSON.parse(data);
-          camera.reading = !!json.a1;
+
+          camera.reading = Array(8);
+          for (let i = 0; i < 8; ++i) {
+            camera.reading[i] = !!json[i];
+          }
 
           // console.log(`camera ${i}: ${camera.reading}`);
 

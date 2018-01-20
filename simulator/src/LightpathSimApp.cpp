@@ -104,7 +104,7 @@ public:
   std::vector<Tile> m_tiles;
 
   CameraPersp m_camera;
- 
+
   Fx *m_fx = nullptr;
   FxRipple m_ripple;
   FxPlasma m_plasma;
@@ -131,7 +131,7 @@ void LightpathSimApp::setup() {
   for (int py = 0; py < led_panel_grid_size.y; ++py) {
     for (int px = 0; px < led_panel_grid_size.x; ++px) {
       m_tiles.emplace_back();
-      
+
       auto &tile = m_tiles.back();
       tile.index = m_tiles.size() - 1;
       tile.bounds = Rectf(vec2(px, py) * led_panel_spacing, vec2(px, py) * led_panel_spacing + led_panel_size);
@@ -227,6 +227,8 @@ void LightpathSimApp::update() {
     return (FD_ISSET(0, &fds));
   };
 
+  const std::size_t tile_mapping[8]{4, 5, 0, 1, 6, 7, 2, 3};
+
   if (inputAvailable()) {
     std::string line;
     std::getline(std::cin, line);
@@ -234,7 +236,8 @@ void LightpathSimApp::update() {
       for (auto it = line.begin(); it != line.end(); ++it) {
         const auto c = *it;
         if (c == '0' || c == '1') {
-          m_tiles[std::distance(line.begin(), it)].on = c == '1';
+          const auto i = tile_mapping[std::distance(line.begin(), it)];
+          m_tiles[i].on = c == '1';
         }
       }
     }
@@ -314,7 +317,7 @@ void LightpathSimApp::mouseDown(MouseEvent event) {
   const auto window_size = getWindowSize();
   const auto mouse_pos = getMousePos();
   const auto ray = m_camera.generateRay(vec2(mouse_pos), window_size);
-  
+
   float t;
   if (ray.calcPlaneIntersection(vec3(0.0f), vec3(0.0f, 0.0f, 1.0f), &t)) {
     m_mouse_world_pos = ray.calcPosition(t);

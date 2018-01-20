@@ -50,7 +50,7 @@ void FxRipple::renderPixel(vec3 &color, const vec2 &pos, const ivec2 &coord, dou
   const float gravity = 0.995f;
   const float transmission = 0.0275f;
   const float tightness = 0.075f;
-  
+
   const vec3 &prev = getPrevColor(coord);
   vec3 vel = color - prev;
   vel *= 1.0f - friction;
@@ -62,7 +62,7 @@ void FxRipple::renderPixel(vec3 &color, const vec2 &pos, const ivec2 &coord, dou
     vel += (c - color) * neighbor_strengths[i] * tightness;
     vel += (c - cp) * neighbor_strengths[i] * transmission;
   }
-  
+
   color += vel;
   color *= gravity;
 
