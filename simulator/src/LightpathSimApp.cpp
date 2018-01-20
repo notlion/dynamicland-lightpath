@@ -200,7 +200,7 @@ void LightpathSimApp::setup() {
   m_test_pattern.initPrivate(led_texture_size, m_tiles);
   m_test_pattern.init(led_texture_size);
 
-  m_fx = &m_plasma;
+  m_fx = &m_ripple;
 
   m_opc_client = kp::opc::Client::create("localhost", 7890, true, false);
 }
@@ -215,10 +215,6 @@ void LightpathSimApp::update() {
 
   m_camera.setAspectRatio(getWindowAspectRatio());
   m_camera.lookAt(glm::normalize(vec3(0.0f, 1.0f, -10.0f)) * distance, vec3(0.0f), vec3(0.0f, 0.0f, -1.0f));
-
-  for (auto &tile : m_tiles) {
-    tile.on_prev = tile.on;
-  }
 
   const auto inputAvailable = [] {
     struct timeval tv;
@@ -248,6 +244,10 @@ void LightpathSimApp::update() {
     m_fx->updatePrivate(m_tiles);
     m_fx->update(time, m_frame_id);
     m_fx->render(time, m_frame_id, m_led_positions, m_led_bounds);
+  }
+
+  for (auto &tile : m_tiles) {
+    tile.on_prev = tile.on;
   }
 
   // Write to Fadecandy

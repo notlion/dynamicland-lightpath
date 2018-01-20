@@ -3,10 +3,7 @@
 #include "Fx.hpp"
 
 class FxRipple : public Fx {
-  glm::vec3 m_random_color;
-  glm::vec2 m_random_pos;
-  float m_random_radius;
-  float m_opacity;
+  std::vector<double> m_tile_on_time;
 
 public:
   void init(const glm::ivec2 &size) override;
