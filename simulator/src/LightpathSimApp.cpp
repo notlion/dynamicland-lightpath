@@ -303,25 +303,24 @@ void LightpathSimApp::draw() {
   m_led_batch->getGlslProg()->uniform("u_splat_opacity", 0.333f);
   m_led_batch->draw();
 
-  int i = 0;
-  for (const auto &tile : m_tiles) {
-    gl::drawStrokedRect(tile.bounds);
-    // gl::drawStringCentered(std::to_string(i++), tile.bounds.getCenter());
-  }
-
-  gl::drawStrokedCircle(m_mouse_world_pos, 1.0f, 16);
+  // int i = 0;
+  // for (const auto &tile : m_tiles) {
+  //   gl::drawStrokedRect(tile.bounds);
+  //   // gl::drawStringCentered(std::to_string(i++), tile.bounds.getCenter());
+  // }
+  // gl::drawStrokedCircle(m_mouse_world_pos, 1.0f, 16);
 #endif
 }
 
 void LightpathSimApp::mouseDown(MouseEvent event) {
   const auto window_size = getWindowSize();
-  const auto mouse_pos = getMousePos();
+  const auto mouse_pos = event.getPos();
   const auto ray = m_camera.generateRay(vec2(mouse_pos), window_size);
 
   float t;
   if (ray.calcPlaneIntersection(vec3(0.0f), vec3(0.0f, 0.0f, 1.0f), &t)) {
     m_mouse_world_pos = ray.calcPosition(t);
-    const auto pos = vec2(m_mouse_world_pos);
+    const auto pos = vec2(m_mouse_world_pos) * vec2(1.0f, -1.0f);
     for (auto &tile : m_tiles) {
       if (tile.bounds.contains(pos)) {
         tile.on = !tile.on;
