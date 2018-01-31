@@ -30,14 +30,31 @@ const float neighbor_strengths[8]{
 
 void FxRipple::init(const ivec2 &size) {
   m_tile_on_time.resize(m_tiles.size(), 0.0);
+  m_tile_hue_offset.resize(m_tiles.size(), 0.0f);
 }
 
 void FxRipple::update(double time, int frame_id) {
+  bool any_tiles_on = false;
+
   for (const auto &tile : m_tiles) {
+    any_tiles_on |= tile.on;
     if (tile.on && !tile.on_prev) {
-      CI_LOG_D("start: " << tile.index);
       m_tile_on_time[tile.index] = time;
+      m_tile_hue_offset[tile.index] = randFloat();
     }
+  }
+
+  if (!any_tiles_on && randInt(50) == 0) {
+    m_droplet_center.x = randFloat(m_render_bounds.getX1(), m_render_bounds.getX2());
+    m_droplet_center.y = randFloat(m_render_bounds.getY1(), m_render_bounds.getY2());
+    m_droplet_color = vec3(Colorf(CM_HSV, randFloat(), 1.0f, 1.0f));
+    float r = randFloat();
+    r *= r;
+    m_droplet_opacity = mix(0.5f, 1.0f, r);
+    m_droplet_radius = mix(1.0f, 3.0f, m_droplet_opacity);
+  }
+  else {
+    m_droplet_opacity = 0.0f;
   }
 }
 
@@ -46,8 +63,8 @@ inline float circle(const vec2 &pos, const vec2 &center, float radius, float fea
 }
 
 void FxRipple::renderPixel(vec3 &color, const vec2 &pos, const ivec2 &coord, double time, int frame_id) {
-  const float friction = 0.2f;
-  const float gravity = 0.995f;
+  const float friction = 0.19f;
+  const float gravity = 0.99f;
   const float transmission = 0.0275f;
   const float tightness = 0.075f;
 
@@ -68,23 +85,20 @@ void FxRipple::renderPixel(vec3 &color, const vec2 &pos, const ivec2 &coord, dou
 
   for (const auto &tile : m_tiles) {
     const auto t = float(time - m_tile_on_time[tile.index]);
-    auto tw2 = clamp(t * 0.1f, 0.0f, 1.0f);
-    tw2 *= tw2;
+
     if (tile.on) {
-      const auto tw = clamp(t * 0.5f, 0.0f, 1.0f);
-      const auto r = 2.0f;
-      const auto v = vec2(mix(10.0f, 3.0f, tw), 0.0f);
-      for (int i = 0; i < 3; ++i) {
-        const auto c = rotate(v, (two_pi<float>() / 3.0f) * float(i) - t * 10.0f) + tile.bounds.getCenter();
-        auto col = vec3(Colorf(CM_HSV, glm::fract(float(i) * 0.025f + t * 0.1f), 1.0f, 1.0f));
-        float a = tw * circle(pos, c, r, r * 0.5f);
-        color = mix(color, col, a * 0.25f);
-        color = mix(color, vec3(1.0f), a * (1.0f - (cos(20.0f * t * tw2) * 0.5f + 0.5f)));
-      }
+      const auto pulse = glm::smoothstep(1.0f, 0.0f, glm::fract(t * 0.5f));
+      const auto col = vec3(Colorf(CM_HSV, glm::fract(m_tile_hue_offset[tile.index] + t * 0.1f), 1.0f, 1.0f));
+      const auto r = mix(1.0f, 4.0f, pulse);
+      const auto a = circle(pos, tile.bounds.getCenter(), r, r);
+      color = mix(color, col, a * mix(0.1f, 1.0f, pulse));
     }
     else if (tile.on_prev) {
-      float a = circle(pos, tile.bounds.getCenter(), 10.0f, 10.0f);
-      color += 4.0f * a * tw2 * vec3(Colorf(CM_HSV, glm::fract(t * 0.1f), 1.0f, 1.0f));
     }
+  }
+
+  if (m_droplet_opacity > 0.0f) {
+    const auto a = circle(pos, m_droplet_center, m_droplet_radius, m_droplet_radius);
+    color += m_droplet_color * (m_droplet_opacity * a);
   }
 }
